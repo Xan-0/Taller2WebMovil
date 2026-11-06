@@ -1,0 +1,15 @@
+name: taller2WM-backend
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - fastapi
+  - uvicorn
+  - sqlalchemy
+  - psycopg2
+  - pydantic
+  - pydantic-settings
+  - pyjwt
+  - passlib
+  - bcrypt

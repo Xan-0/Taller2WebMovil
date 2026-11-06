@@ -1,5 +1,6 @@
 Taller2WebMovil/
 │   .gitignore
+|   ENUNCIADO.md
 │   estructura-archivos.md
 │   README.md
 │
