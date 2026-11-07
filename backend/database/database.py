@@ -3,10 +3,23 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# URL de conexión a PostgreSQL (puede configurarse mediante variable de entorno)
+# Parámetros de configuración por defecto
+DB_NAME = 'taller2_WM_db'
+DB_USER = 'postgres'
+DB_PASS = 'postgres'
+DB_PORT = '5432'
+
+"""
+URL de conexión a PostgreSQL (si no existe DATABASE_URL se usa el texto formateado)
+- puede configurarse mediante variables de entorno del sistema operativo actual
+- cambiar DB_USER y DB_PASS por usuario y contraseña del servidor postgresql
+- cambiar puerto 5432 si e tuyo es diferente
+- taller2_WM_db debe estar creado previamente en postgresql
+(no es necesario que las tablas estén creadas)
+"""
 SQLALCHEMY_DATABASE_URL = os.getenv(
-    "DATABASE_URL", 
-    "postgresql://postgres:postgres@localhost:5432/taller2_db"
+    "DATABASE_URL",
+    f"postgresql://{DB_USER}:{DB_PASS}@localhost:{DB_PORT}/{DB_NAME}"
 )
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)

@@ -2,20 +2,23 @@
 -- se considera la posibilidad de incluir correo y/o alguna configuracion
 CREATE TABLE usuarios (
     uid SERIAL PRIMARY KEY,
-    nombre text NOT NULL,
-    password_hash text NOT NULL,
+    nombre text UNIQUE NOT NULL,
+    password_hash text NOT NULL /*,
+    correo text UNIQUE,
+    configuracion JSONB DEFAULT '{}'::jsonb */
 );
 
 
--- tareas diarias (order by fecha, fin_minutos = inicio_minutos + duracion_minutos)
+-- tareas diarias (order by fecha, inicio_minutos)
 -- se considera la posibilidad de incluir categorias para las tareas
 CREATE TABLE tareas (
+    id SERIAL PRIMARY KEY,
     uid INTEGER NOT NULL REFERENCES usuarios(uid),
     titulo text NOT NULL,
     descripcion text,
     fecha text NOT NULL DEFAULT now()::date::text,
     inicio_minutos integer NOT NULL DEFAULT 0,
-    duracion_minutos text NOT NULL DEFAULT 90,
+    duracion_minutos integer NOT NULL DEFAULT 90,
 
     CHECK (
         inicio_minutos >= 0
@@ -29,5 +32,9 @@ CREATE TABLE tareas (
     CHECK (LOWER(estado) IN ('por hacer', 'en progreso', 'completada')),
     
     prioridad text
-    CHECK (LOWER(prioridad) IN ('baja', 'media', 'alta') OR prioridad = NULL)
+    CHECK (LOWER(prioridad) IN ('baja', 'media', 'alta') OR prioridad IS NULL) /*,
+
+    categoria text DEFAULT 'general'
+    CHECK (LOWER(categoria) IN ('general', 'trabajo', 'estudio') OR categoria IS NULL)
+    */
 );
