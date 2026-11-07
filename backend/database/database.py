@@ -19,7 +19,7 @@ URL de conexión a PostgreSQL (si no existe DATABASE_URL se usa el texto formate
 """
 SQLALCHEMY_DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    f"postgresql://{DB_USER}:{DB_PASS}@localhost:{DB_PORT}/{DB_NAME}"
+    f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@localhost:{DB_PORT}/{DB_NAME}"
 )
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
