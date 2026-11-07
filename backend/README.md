@@ -1,3 +1,5 @@
+Información sobre inicialización de la base de datos en *database/database.py*
+
 # Pasos para hacer debug del backend
 En anaconda prompt o similar, desde la carpeta del taller ejecutar:
 ```shell
