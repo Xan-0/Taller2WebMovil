@@ -41,6 +41,7 @@ class TareaCreate(BaseModel):
     duracion_minutos: int = Field(ge=1)
     estado: str = "por hacer"
     prioridad: Optional[str] = None
+    #categoria: Optional[str] = "general"
 
 class TareaUpdate(BaseModel):
     """
@@ -53,6 +54,7 @@ class TareaUpdate(BaseModel):
     duracion_minutos: Optional[int] = Field(default=None, ge=1)
     estado: Optional[str] = None
     prioridad: Optional[str] = None
+    #categoria: Optional[str] = "general"
 
 class TareaResponse(BaseModel):
     """
@@ -67,6 +69,7 @@ class TareaResponse(BaseModel):
     duracion_minutos: int
     estado: str
     prioridad: Optional[str] = None
+    #categoria: Optional[str] = "general"
 
     class Config:
         from_attributes = True
