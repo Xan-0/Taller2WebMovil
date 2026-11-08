@@ -1,0 +1,32 @@
+<mat-toolbar color="primary">
+  <span>Detalle de Tarea</span>
+  <span class="spacer"></span>
+  <button mat-button (click)="volver()">
+    <mat-icon>arrow_back</mat-icon> Volver
+  </button>
+</mat-toolbar>
+
+<div class="detail-container">
+  @if (loading()) {
+    <p class="msg">Cargando información...</p>
+  } @else if (tarea()) {
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <mat-card-title>{{ tarea()?.titulo }}</mat-card-title>
+        <mat-card-subtitle>Fecha: {{ tarea()?.fecha }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content class="content">
+        <p><strong>Descripción:</strong> {{ tarea()?.descripcion || 'Sin descripción' }}</p>
+        <p><strong>Estado:</strong> <span class="badge {{ tarea()?.estado?.replace(' ', '-') }}">{{ tarea()?.estado }}</span></p>
+        <p><strong>Prioridad:</strong> {{ tarea()?.prioridad || 'No asignada' }}</p>
+        <p><strong>Hora de inicio (minutos del día):</strong> {{ tarea()?.inicio_minutos }} min</p>
+        <p><strong>Duración:</strong> {{ tarea()?.duracion_minutos }} minutos</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="volver()">Regresar al Dashboard</button>
+      </mat-card-actions>
+    </mat-card>
+  } @else {
+    <p class="msg">No se encontró la tarea solicitada.</p>
+  }
+</div>

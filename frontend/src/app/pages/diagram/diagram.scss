@@ -1,0 +1,79 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.diagram-container {
+  padding: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.diagram-card {
+  padding: 20px;
+}
+
+.msg {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+}
+
+.timeline-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #888;
+  margin-top: 25px;
+  padding: 0 5px;
+}
+
+.timeline-track {
+  position: relative;
+  height: 60px;
+  background-color: #f1f3f4;
+  border-radius: 6px;
+  margin: 10px 0 30px 0;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.timeline-block {
+  position: absolute;
+  top: 10px;
+  height: 40px;
+  background-color: #3f51b5;
+  color: white;
+  border-radius: 4px;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.legend {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+  }
+
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+
+    &.por-hacer { background-color: #ffe082; border: 1px solid #d4af37; }
+    &.en-progreso { background-color: #81d4fa; }
+    &.completada { background-color: #a5d6a7; }
+  }
+}

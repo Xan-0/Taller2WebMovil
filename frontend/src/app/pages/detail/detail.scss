@@ -1,0 +1,42 @@
+.spacer {
+  flex: 1 1 auto;
+}
+
+.detail-container {
+  padding: 30px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.detail-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.content {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.msg {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #666;
+  margin-top: 40px;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: capitalize;
+
+  &.por-hacer { background-color: #ffe082; color: #5d4037; }
+  &.en-progreso { background-color: #81d4fa; color: #01579b; }
+  &.completada { background-color: #a5d6a7; color: #1b5e20; }
+}
