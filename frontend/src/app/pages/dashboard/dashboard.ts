@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { resource } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -34,7 +34,8 @@ import { AuthService } from '../../services/auth.service';
     MatSelectModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
-    MatIconModule
+    MatIconModule,
+    RouterLink
   ],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss']
@@ -145,6 +146,7 @@ export class Dashboard {
       estado: 'por hacer',
       prioridad: 'media'
     });
+    this.tareasResource.reload();
   }
 
   logout() {
