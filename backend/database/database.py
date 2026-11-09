@@ -12,14 +12,14 @@ DB_PORT = '5432'
 """
 URL de conexión a PostgreSQL (si no existe DATABASE_URL se usa el texto formateado)
 - puede configurarse mediante variables de entorno del sistema operativo actual
-- cambiar DB_USER y DB_PASS por usuario y contraseña del servidor postgresql
-- cambiar puerto 5432 si e tuyo es diferente
-- taller2_WM_db debe estar creado previamente en postgresql
+- cambiar DB_USER y DB_PASS por usuario y contraseña del servidor postgresql si es diferente
+- cambiar puerto 5432 si el tuyo es diferente
+- la base de datos 'taller2_WM_db' debe estar creado previamente en postgresql
 (no es necesario que las tablas estén creadas)
 """
 SQLALCHEMY_DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    f"postgresql://{DB_USER}:{DB_PASS}@localhost:{DB_PORT}/{DB_NAME}"
+    f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@localhost:{DB_PORT}/{DB_NAME}"
 )
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)

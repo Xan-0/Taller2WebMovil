@@ -11,5 +11,4 @@ dependencies:
   - pydantic
   - pydantic-settings
   - pyjwt
-  - passlib
   - bcrypt

@@ -1,17 +1,32 @@
 Taller2WebMovil/
 │   .gitignore
-|   ENUNCIADO.md
+│   ENUNCIADO.md
+│   environment.yml
 │   estructura-archivos.md
 │   README.md
+│
+├───.vscode
+│       settings.json
 │
 ├───backend
 │   │   main.py
 │   │
 │   ├───database
+│   │       database.py
+│   │
 │   ├───models
+│   │       models.py
+│   │
 │   ├───routers
-│   └───schemas
-│           schema.sql
+│   │       auth.py
+│   │       tareas.py
+│   │
+│   ├───schemas
+│   │       schema.sql
+│   │       schemas.py
+│   │
+│   └───utils
+│           security.py
 │
 └───frontend
     └───src

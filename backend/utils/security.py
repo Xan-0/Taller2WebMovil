@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Optional
 import jwt
-from passlib.context import CryptContext
+import bcrypt
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -14,16 +14,18 @@ SECRET_KEY = "clave_secreta_super_segura_para_el_taller_2"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60  # Duración del token
 
-# Configuración de Passlib para bcrypt
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+security = HTTPBearer()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verifica si una contraseña en texto plano coincide con su hash."""
-    return pwd_context.verify(plain_password, hashed_password)
+    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 def get_password_hash(password: str) -> str:
-    """Genera el hash seguro de una contraseña."""
-    return pwd_context.hash(password)
+    """Genera el hash seguro de una contraseña usando bcrypt directamente."""
+    pwd_bytes = password.encode('utf-8')
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(pwd_bytes, salt)
+    return hashed.decode('utf-8')
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
     """Crea un token JWT con los datos del usuario y tiempo de expiración."""
@@ -35,8 +37,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 
 # Dependencia de Autenticación
-
-security = HTTPBearer()
 
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)) -> Usuario:
     """Valida el token JWT y retorna el usuario autenticado actual."""
