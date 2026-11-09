@@ -8,11 +8,13 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from backend.database.database import get_db
 from backend.models.models import Usuario
+from backend.config import settings
 
 # Clave secreta para firmar los JWT (en producción debe ir en variables de entorno)
-SECRET_KEY = "clave_secreta_super_segura_para_el_taller_2"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60  # Duración del token
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
+# Duración del token
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
 security = HTTPBearer()
 
