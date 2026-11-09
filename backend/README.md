@@ -1,6 +1,9 @@
 Información sobre inicialización de la base de datos en *database/database.py*
 
-# Pasos para hacer debug del backend
+# Pasos para hacer debug del back-end
+
+## Parte para ejecutar
+
 En anaconda prompt o similar, desde la carpeta del taller ejecutar:
 ```shell
 (base) conda env create -f environment.yml
@@ -13,6 +16,8 @@ Deberías ver en la consola mensajes indicando que la aplicación arrancó exito
 <br>
 
 ****
+
+## Pasos extra de Debug
 
 ### Comprobar el funcionamiento con Swagger UI (Documentación Interactiva)
 
@@ -30,7 +35,7 @@ Verás todos los endpoints agrupados por categorías (Autenticación y Tareas).
 #### Registrar un usuario:
 - Despliega el endpoint POST /auth/register.
 
-- Haz clic en "Try it out", ingresa un nombre y contraseña en formato JSON (ej. `{"nombre": "testuser", "password": "123"}`) y presiona Execute.
+- Haz clic en "Try it out", ingresa un nombre y contraseña en formato JSON (ej. `{"nombre": "testuser", "password": "1234"}`) y presiona Execute.
 
 - Verificación: La respuesta debe retornar un código 201 Created junto con el objeto del usuario creado (uid y nombre).
 
@@ -58,7 +63,7 @@ Verás todos los endpoints agrupados por categorías (Autenticación y Tareas).
 ```json
 {
     nombre: "testuser"
-    password_hash: "123"
+    password_hash: "1234"
 }
 ```
 - access_token: ... (copiar el valor obtenido para acceder a endpoints de tareas)

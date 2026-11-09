@@ -8,6 +8,6 @@ Gestor de Tareas simple en AngularTS, Python FastAPI y PostgreSQL
 
 - *Back-end*: Ejecutando FastAPI con Uvicorn en tu entorno virtual de Python (creado con el **environment.yml**).
 
-- *Front-end:* Ejecutando `ng serve` de Angular en tu terminal.
+- *Front-end:* Ejecutando `npm install` y `ng serve` de Angular en tu terminal.
 
-Más información en backend/README.md
+Más información en backend/README.md y frontend/README.md
