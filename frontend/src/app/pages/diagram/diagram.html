@@ -1,0 +1,50 @@
+<mat-toolbar color="primary">
+  <span>Diagrama Diario de Tareas</span>
+  <span class="spacer"></span>
+  <button mat-button (click)="volver()">
+    <mat-icon>arrow_back</mat-icon> Volver al Dashboard
+  </button>
+</mat-toolbar>
+
+<div class="diagram-container">
+  <mat-card class="diagram-card">
+    <mat-card-header>
+      <mat-card-title>Línea de Tiempo (24 Horas)</mat-card-title>
+      <mat-card-subtitle>Visualización basada en los minutos del día</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (loading()) {
+        <p class="msg">Cargando diagrama...</p>
+      } @else if (tareas().length === 0) {
+        <p class="msg">No hay tareas para graficar.</p>
+      } @else {
+        <div class="timeline-axis">
+          <span>00:00</span>
+          <span>06:00</span>
+          <span>12:00</span>
+          <span>18:00</span>
+          <span>24:00</span>
+        </div>
+
+        <div class="timeline-track">
+          @for (tarea of tareas(); track tarea.id) {
+            <div 
+              class="timeline-block" 
+              [style.left]="calcularPosicion(tarea.inicio_minutos)"
+              [style.width]="calcularAncho(tarea.duracion_minutos)"
+              [title]="tarea.titulo + ' (' + tarea.estado + ')'">
+              <span class="task-title">{{ tarea.titulo }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="legend">
+          <div class="legend-item"><span class="dot por-hacer"></span> Por Hacer</div>
+          <div class="legend-item"><span class="dot en-progreso"></span> En Progreso</div>
+          <div class="legend-item"><span class="dot completada"></span> Completada</div>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
