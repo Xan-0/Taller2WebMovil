@@ -48,13 +48,13 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        nombre: str = payload.get("sub")
+        if nombre is None:
             raise credentials_exception
     except jwt.PyJWTError:
         raise credentials_exception
         
-    user = db.query(Usuario).filter(Usuario.nombre == username).first()
+    user = db.query(Usuario).filter(Usuario.nombre == nombre).first()
     if user is None:
         raise credentials_exception
     return user

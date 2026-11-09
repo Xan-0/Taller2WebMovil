@@ -36,7 +36,7 @@ export class Profile implements OnInit {
   tareas = signal<any[]>([]);
   
   perfilForm: FormGroup = this.fb.group({
-    username: ['', Validators.required],
+    nombre: ['', Validators.required],
     password: ['']
   });
 
@@ -53,7 +53,7 @@ export class Profile implements OnInit {
     this.usuarioService.obtenerPerfil().subscribe({
       next: (res) => {
         this.perfilForm.patchValue({
-          username: res.username || res.email || ''
+          nombre: res.nombre || res.email || ''
         });
       },
       error: (err) => console.error('Error al cargar perfil', err)
@@ -65,11 +65,11 @@ export class Profile implements OnInit {
       const formValues = this.perfilForm.value;
       const datosAEnviar: any = {};
 
-      if (formValues.username) {
-        datosAEnviar.username = formValues.username;
+      if (formValues.nombre) {
+        datosAEnviar.nombre = formValues.nombre;
       }
       if (formValues.password && formValues.password.trim() !== '') {
-        datosAEnviar.password = formValues.password;
+        datosAEnviar.nombre = formValues.password;
       }
 
       this.usuarioService.actualizarPerfil(datosAEnviar).subscribe({

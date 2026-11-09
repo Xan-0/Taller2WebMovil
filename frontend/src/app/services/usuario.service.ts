@@ -13,7 +13,7 @@ export class UsuarioService {
     return this.http.get(`${this.apiUrl}/auth/perfil`);
   }
 
-  actualizarPerfil(data: { username?: string; password?: string }): Observable<any> {
+  actualizarPerfil(data: { nombre?: string; password?: string }): Observable<any> {
     return this.http.put(`${this.apiUrl}/auth/perfil`, data);
   }
 }
