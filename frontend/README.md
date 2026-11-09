@@ -14,7 +14,7 @@ Crear una base de datos vacía llamada `taller2_WM_db` (desde pgAdmin o con este
 createdb -U postgres taller2_WM_db
 ```
 
-## 2. Configuración de environment opcional (`.env`)
+## 2. Configuración de environment (`.env`)
 El backend lee su configuración desde un archivo `.env` en la raíz del proyecto. **No se sube al repositorio** (está en `.gitignore`).
 
 1. Copiar la plantilla:
