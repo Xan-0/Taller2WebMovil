@@ -1,0 +1,81 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  .spacer { flex: 1; }
+}
+
+.calendar-container {
+  display: flex;
+  gap: 24px;
+  padding: 32px;
+  justify-content: center;
+  align-items: flex-start;
+
+  .calendar-card, .tasks-card {
+    flex: 1;
+    max-width: 450px;
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .calendar-content {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+
+    .highlight-todo-date {
+      background-color: #ffe0b2 !important;
+      border-radius: 100% !important;
+
+      .mat-calendar-body-cell-content {
+        color: #e65100 !important;
+        font-weight: bold !important;
+      }
+    }
+  }
+
+  .tasks-content {
+    margin-top: 16px;
+
+    .empty-msg {
+      color: #666;
+      text-align: center;
+      margin-top: 24px;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .task-item-card {
+        background: #f9f9f9;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+
+        h4 {
+          margin: 0 0 8px 0;
+          color: #1976d2;
+        }
+
+        p {
+          margin: 0 0 12px 0;
+          color: #555;
+          font-size: 0.9rem;
+        }
+
+        .badge {
+          display: inline-block;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 0.75rem;
+          font-weight: bold;
+          text-transform: uppercase;
+
+          &.por-hacer { background-color: #ff9800; color: white; }
+          &.en-progreso { background-color: #2196f3; color: white; }
+          &.completada { background-color: #4caf50; color: white; }
+        }
+      }
+    }
+  }
+}

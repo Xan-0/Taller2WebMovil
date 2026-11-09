@@ -1,0 +1,50 @@
+<mat-toolbar color="primary" class="navbar">
+  <span>Tablero Kanban</span>
+  <span class="spacer"></span>
+  <button mat-button routerLink="/dashboard">Dashboard</button>
+  <button mat-button routerLink="/profile">Perfil</button>
+</mat-toolbar>
+
+<div class="kanban-container">
+  <div class="kanban-column">
+    <h3>Por Hacer</h3>
+    <div class="column-content">
+      @for (task of obtenerPorEstado('por hacer'); track task.id) {
+        <mat-card class="task-card">
+          <mat-card-content>
+            <h4>{{ task.titulo }}</h4>
+            <p>{{ task.descripcion }}</p>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  </div>
+
+  <div class="kanban-column">
+    <h3>En Progreso</h3>
+    <div class="column-content">
+      @for (task of obtenerPorEstado('en progreso'); track task.id) {
+        <mat-card class="task-card">
+          <mat-card-content>
+            <h4>{{ task.titulo }}</h4>
+            <p>{{ task.descripcion }}</p>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  </div>
+
+  <div class="kanban-column">
+    <h3>Completada</h3>
+    <div class="column-content">
+      @for (task of obtenerPorEstado('completada'); track task.id) {
+        <mat-card class="task-card">
+          <mat-card-content>
+            <h4>{{ task.titulo }}</h4>
+            <p>{{ task.descripcion }}</p>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  </div>
+</div>
