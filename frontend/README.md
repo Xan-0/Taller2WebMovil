@@ -2,6 +2,20 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.6.
 
+
+# Pasos para ejecutar front-end:
+
+Tener el back-end ejecutándose (leer README del backend)
+
+Desde la carpeta ./frontend, ejecutar:
+```bash
+npm install
+ng serve
+```
+Por último, entrar a `http://localhost:4200/`
+
+<br><br>
+
 ## Development server
 
 To start a local development server, run:
