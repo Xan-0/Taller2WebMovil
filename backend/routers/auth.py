@@ -62,14 +62,16 @@ def actualizar_perfil(
     """Actualiza el perfil del usuario autenticado (nombre y/o contraseña)."""
     
     # Si desea cambiar el nombre, verificamos que no pertenezca a otro usuario
-    if user_data.nombre and user_data.nombre != current_user.nombre:
-        existing_user = db.query(Usuario).filter(Usuario.nombre == user_data.nombre).first()
-        if existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="El nombre de usuario ya se encuentra en uso."
-            )
-        current_user.nombre = user_data.nombre
+    if user_data.nombre is not None:
+        nuevo_nombre = user_data.nombre.strip()
+        if nuevo_nombre and nuevo_nombre != current_user.nombre:
+            existing_user = db.query(Usuario).filter(Usuario.nombre == nuevo_nombre).first()
+            if existing_user:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="El nombre de usuario ya se encuentra en uso."
+                )
+            current_user.nombre = nuevo_nombre
 
     # Si desea cambiar la contraseña, la encriptamos de forma segura
     if user_data.password:
