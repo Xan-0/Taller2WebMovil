@@ -1,0 +1,45 @@
+<mat-toolbar color="primary" class="navbar">
+  <span>Calendario de Tareas</span>
+  <span class="spacer"></span>
+  <button mat-button routerLink="/dashboard">Dashboard</button>
+  <button mat-button routerLink="/kanban">Kanban</button>
+  <button mat-button routerLink="/profile">Perfil</button>
+</mat-toolbar>
+
+<div class="calendar-container">
+  <mat-card class="calendar-card">
+    <mat-card-header>
+      <mat-card-title>Selecciona una fecha</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="calendar-content">
+      <mat-calendar 
+        [selected]="fechaSeleccionada" 
+        [dateClass]="dateClass"
+        (selectedChange)="onDateChange($event)">
+      </mat-calendar>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="tasks-card">
+    <mat-card-header>
+      <mat-card-title>Tareas para el {{ fechaSeleccionada | date:'dd/MM/yyyy' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content class="tasks-content">
+      @if (tareasDelDia().length === 0) {
+        <p class="empty-msg">No hay tareas programadas para este día.</p>
+      } @else {
+        <div class="task-list">
+          @for (task of tareasDelDia(); track task.id) {
+            <mat-card class="task-item-card">
+              <mat-card-content>
+                <h4>{{ task.titulo }}</h4>
+                <p>{{ task.descripcion }}</p>
+                <span class="badge {{ task.estado.replace(' ', '-') }}">{{ task.estado }}</span>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

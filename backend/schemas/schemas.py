@@ -28,6 +28,10 @@ class UsuarioLogin(BaseModel):
     nombre: str
     password: str
 
+class UsuarioUpdate(BaseModel):
+    nombre: Optional[str] = None
+    password: Optional[str] = None
+
 
 # --- Esquemas de Tarea (CRUD) (delete no requiere una clase) ---
 class TareaCreate(BaseModel):

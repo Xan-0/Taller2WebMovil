@@ -1,0 +1,61 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  .spacer { flex: 1; }
+}
+
+.calendar-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 32px 20px;
+  justify-content: center;
+  align-items: flex-start;
+
+  .calendar-card, .tasks-card {
+    flex: 1 1 340px;
+    max-width: 450px;
+    padding: 16px;
+  }
+
+  .calendar-content {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+
+    .highlight-todo-date {
+      background-color: #e8e1ff !important;
+      border-radius: 100% !important;
+
+      .mat-calendar-body-cell-content {
+        color: #5e35b1 !important;
+        font-weight: bold !important;
+      }
+    }
+  }
+
+  .tasks-content {
+    margin-top: 16px;
+
+    .empty-msg {
+      color: #667;
+      text-align: center;
+      margin-top: 24px;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .task-item-card {
+        background: #fff;
+        border-left: 4px solid #7c4dff;
+        box-shadow: 0 2px 8px rgba(63, 81, 181, 0.08);
+
+        h4 { margin: 0 0 6px; color: #283593; }
+        p { margin: 0 0 12px; color: #555; font-size: 0.9rem; }
+      }
+    }
+  }
+}

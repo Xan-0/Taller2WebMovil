@@ -1,0 +1,51 @@
+<mat-toolbar color="primary" class="navbar">
+  <span>Perfil de Usuario y Estadísticas</span>
+  <span class="spacer"></span>
+  <button mat-button routerLink="/dashboard">Dashboard</button>
+  <button mat-button routerLink="/kanban">Kanban</button>
+</mat-toolbar>
+
+<div class="profile-container">
+  <mat-card class="profile-card">
+    <mat-card-header>
+      <mat-card-title>Estadísticas de Tareas</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="stats-grid">
+        <div class="stat-box total">
+          <span class="number">{{ totalTareas }}</span>
+          <span class="label">Total</span>
+        </div>
+        <div class="stat-box todo">
+          <span class="number">{{ porHacer }}</span>
+          <span class="label">Por Hacer</span>
+        </div>
+        <div class="stat-box progress">
+          <span class="number">{{ enProgreso }}</span>
+          <span class="label">En Progreso</span>
+        </div>
+        <div class="stat-box done">
+          <span class="number">{{ completadas }}</span>
+          <span class="label">Completadas</span>
+        </div>
+      </div>
+
+      <h3 class="section-title">Editar Información de la Cuenta</h3>
+      <form [formGroup]="perfilForm" (ngSubmit)="actualizarPerfil()" class="profile-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre de usuario</mat-label>
+          <input matInput formControlName="username" placeholder="Tu nombre de usuario">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nueva Contraseña</mat-label>
+          <input matInput type="password" formControlName="password" placeholder="Dejar en blanco para mantener la actual">
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="perfilForm.invalid">
+          Guardar Cambios
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
