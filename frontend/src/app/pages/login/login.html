@@ -1,5 +1,11 @@
 <div class="login-container">
   <mat-card class="login-card">
+    <div class="brand">
+      <div class="logo">✓</div>
+      <h1>Gestor de Tareas</h1>
+      <p>Organiza tu día, tarea por tarea</p>
+    </div>
+
     <mat-card-header>
       <mat-card-title>
         {{ isRegisterMode() ? 'Crear Nueva Cuenta' : 'Iniciar Sesión' }}
@@ -8,20 +14,22 @@
 
     <mat-card-content>
       <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
-        
+
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Nombre de Usuario</mat-label>
           <input matInput formControlName="nombre" placeholder="Ingresa tu usuario">
           @if (authForm.get('nombre')?.hasError('required') && authForm.get('nombre')?.touched) {
             <mat-error>El nombre de usuario es obligatorio</mat-error>
           }
+          @if (authForm.get('nombre')?.hasError('minlength')) {
+            <mat-error>Mínimo 3 caracteres</mat-error>
+          }
         </mat-form-field>
 
-        
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Contraseña</mat-label>
           <input matInput type="password" formControlName="password" placeholder="Ingresa tu contraseña">
-          @if (authForm.get('password')?.hasError('required') && authForm.get('password')?.touched) {
+          @if (authForm.get('password')?.invalid && authForm.get('password')?.touched) {
             <mat-error>La contraseña es obligatoria (mínimo 4 caracteres)</mat-error>
           }
         </mat-form-field>

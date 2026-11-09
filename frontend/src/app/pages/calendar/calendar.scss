@@ -6,15 +6,15 @@
 
 .calendar-container {
   display: flex;
+  flex-wrap: wrap;
   gap: 24px;
-  padding: 32px;
+  padding: 32px 20px;
   justify-content: center;
   align-items: flex-start;
 
   .calendar-card, .tasks-card {
-    flex: 1;
+    flex: 1 1 340px;
     max-width: 450px;
-    border-radius: 12px;
     padding: 16px;
   }
 
@@ -24,11 +24,11 @@
     margin-top: 16px;
 
     .highlight-todo-date {
-      background-color: #ffe0b2 !important;
+      background-color: #e8e1ff !important;
       border-radius: 100% !important;
 
       .mat-calendar-body-cell-content {
-        color: #e65100 !important;
+        color: #5e35b1 !important;
         font-weight: bold !important;
       }
     }
@@ -38,7 +38,7 @@
     margin-top: 16px;
 
     .empty-msg {
-      color: #666;
+      color: #667;
       text-align: center;
       margin-top: 24px;
     }
@@ -49,32 +49,12 @@
       gap: 12px;
 
       .task-item-card {
-        background: #f9f9f9;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        background: #fff;
+        border-left: 4px solid #7c4dff;
+        box-shadow: 0 2px 8px rgba(63, 81, 181, 0.08);
 
-        h4 {
-          margin: 0 0 8px 0;
-          color: #1976d2;
-        }
-
-        p {
-          margin: 0 0 12px 0;
-          color: #555;
-          font-size: 0.9rem;
-        }
-
-        .badge {
-          display: inline-block;
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 0.75rem;
-          font-weight: bold;
-          text-transform: uppercase;
-
-          &.por-hacer { background-color: #ff9800; color: white; }
-          &.en-progreso { background-color: #2196f3; color: white; }
-          &.completada { background-color: #4caf50; color: white; }
-        }
+        h4 { margin: 0 0 6px; color: #283593; }
+        p { margin: 0 0 12px; color: #555; font-size: 0.9rem; }
       }
     }
   }
