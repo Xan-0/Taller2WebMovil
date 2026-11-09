@@ -1,4 +1,4 @@
-# Taller2WebMovil
+# Taller2WebMovil (Rama secundaria con sqlite)
 Gestor de Tareas simple en AngularTS, Python FastAPI y PostgreSQL
 
 # Ejecución futura planeada:
