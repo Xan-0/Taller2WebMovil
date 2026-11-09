@@ -11,10 +11,16 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Agrega aquí la URL pública donde se despliegue tu Angular
+origins = [
+    "https://frontend-production-b9da.up.railway.app",
+    "http://localhost:4200" # Para pruebas locales
+]
+
 # Configuración de CORS para permitir peticiones desde Angular (localhost:4200)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # En producción se recomienda restringir dominios
+    allow_origins=origins,  # En producción se recomienda restringir dominios
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
