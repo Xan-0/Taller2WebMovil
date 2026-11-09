@@ -14,13 +14,13 @@ app = FastAPI(
 # Configuración de CORS para permitir peticiones desde Angular (localhost:4200)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # En producción se recomienda restringir dominios
+    allow_origins=["http://localhost:4200", "http://127.0.0.1:4200"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Incluir los routers
+# Incluir los routers (asegúrate de que en auth.py y tareas.py el APIRouter tenga sus prefix o rutas definidas)
 app.include_router(auth.router)
 app.include_router(tareas.router)
 
