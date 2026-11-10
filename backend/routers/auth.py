@@ -32,7 +32,7 @@ def register(user_data: UsuarioCreate, db: Session = Depends(get_db)):
 @router.post("/login")
 def login(user_data: UsuarioLogin, db: Session = Depends(get_db)):
     """Valida las credenciales del usuario y retorna un token JWT."""
-    user = db.query(Usuario).filter(Usuario.nombre == user_data.nombre).first()
+    user = db.query(Usuario).filter(Usuario.uid == user_data.uid).first()
     
     if not user or not verify_password(user_data.password, user.password_hash):
         raise HTTPException(
@@ -42,14 +42,14 @@ def login(user_data: UsuarioLogin, db: Session = Depends(get_db)):
         )
     
     # Generar token JWT incluyendo el nombre y el uid
-    access_token = create_access_token(data={"sub": user.nombre, "uid": user.uid})
+    access_token = create_access_token(data={"uid": user.uid})
     
     return {
         "access_token": access_token,
         "token_type": "bearer",
         "usuario": {
             "uid": user.uid,
-            "nombre": user.nombre
+            "sub": user.nombre
         }
     }
 
