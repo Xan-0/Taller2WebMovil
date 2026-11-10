@@ -34,10 +34,10 @@ export class TareasService {
     }
 
     actualizarTarea(id: number, tarea: TareaUpdate): Observable<Tarea> {
-        return this.http.put<Tarea>(`${this.apiUrl}/${id}`, tarea);
+        return this.http.put<Tarea>(`${this.apiUrl}/tareas/${id}`, tarea);
     }
 
     eliminarTarea(id: number): Observable<void> {
-        return this.http.delete<void>(`${this.apiUrl}/${id}`);
+        return this.http.delete<void>(`${this.apiUrl}/tareas/${id}`);
     }
 }

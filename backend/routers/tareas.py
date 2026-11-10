@@ -8,7 +8,7 @@ from utils.security import get_current_user
 
 router = APIRouter(prefix="/tareas", tags=["Tareas"])
 
-@router.post("/", response_model=TareaResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=TareaResponse, status_code=status.HTTP_201_CREATED)
 def crear_tarea(
     tarea: TareaCreate, 
     db: Session = Depends(get_db), 
@@ -24,7 +24,7 @@ def crear_tarea(
     db.refresh(nueva_tarea)
     return nueva_tarea
 
-@router.get("/", response_model=List[TareaResponse])
+@router.get("", response_model=List[TareaResponse])
 def listar_tareas(
     db: Session = Depends(get_db), 
     current_user: Usuario = Depends(get_current_user)
