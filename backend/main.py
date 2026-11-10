@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.database.database import engine, Base
-from backend.routers import auth, tareas
+from database.database import engine, Base
+from routers import auth, tareas
 import os, uvicorn
 
 # Crear las tablas en la base de datos si no existen

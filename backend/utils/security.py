@@ -6,9 +6,9 @@ import bcrypt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
-from backend.database.database import get_db
-from backend.models.models import Usuario
-from backend.config import settings
+from database.database import get_db
+from models.models import Usuario
+from config import settings
 
 # Clave secreta para firmar los JWT (en producción debe ir en variables de entorno)
 SECRET_KEY = settings.SECRET_KEY

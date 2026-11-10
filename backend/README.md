@@ -4,11 +4,11 @@ Información sobre inicialización de la base de datos en *database/database.py*
 
 ## Parte para ejecutar
 
-En anaconda prompt o similar, desde la carpeta del taller ejecutar:
+En anaconda prompt o similar, desde la carpeta de backend ejecutar:
 ```shell
 (base) conda env create -f environment.yml
 (base) conda activate taller2WM-backend
-(taller2WM-backend) uvicorn backend.main:app --reload --host 127.0.0.1 --port 8000
+(taller2WM-backend) uvicorn main:app --reload --host 127.0.0.1 --port 8000
 ```
 
 Deberías ver en la consola mensajes indicando que la aplicación arrancó exitosamente (Uvicorn running on [http://127.0.0.1:8000](http://127.0.0.1:8000)) y que SQLAlchemy creó las tablas en PostgreSQL.
