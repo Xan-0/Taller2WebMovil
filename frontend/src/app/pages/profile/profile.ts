@@ -69,7 +69,7 @@ export class Profile implements OnInit {
         datosAEnviar.nombre = formValues.nombre;
       }
       if (formValues.password && formValues.password.trim() !== '') {
-        datosAEnviar.password_hash = formValues.password;
+        datosAEnviar.password = formValues.password;
       }
 
       this.usuarioService.actualizarPerfil(datosAEnviar).subscribe({
