@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { Tarea } from '../../services/tareas.service';
+import { environment } from '../../../environments/environment.prod';
 
 @Component({
   selector: 'app-detail',
@@ -32,7 +33,7 @@ export class Detail {
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.http.get<Tarea>(`http://localhost:8000/tareas/`).subscribe({
+      this.http.get<Tarea>(`${environment.apiUrl}/tareas/`).subscribe({
         next: (tareas: any) => {
           const encontrada = tareas.find((t: Tarea) => t.id === Number(id));
           if (encontrada) {

@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.prod';
 
 export interface Tarea {
     id: number;
@@ -22,7 +23,7 @@ export type TareaUpdate = Partial<TareaCreate>;
 })
 export class TareasService {
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:8000/tareas';
+    private apiUrl = `${environment.apiUrl}/tareas`;
 
     getTareas(): Observable<Tarea[]> {
         return this.http.get<Tarea[]>(this.apiUrl);

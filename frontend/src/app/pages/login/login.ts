@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../environments/environment.prod';
 
 @Component({
   selector: 'app-login',
@@ -56,7 +57,7 @@ export class Login {
 
     if (this.isRegisterMode()) {
       // Petición a tu endpoint backend/routers/auth.py -> /auth/register
-      this.http.post('http://localhost:8000/auth/register', credentials).subscribe({
+      this.http.post(`${environment.apiUrl}/auth/register`, credentials).subscribe({
         next: () => {
           this.snackBar.open('¡Cuenta creada con éxito! Ahora puedes iniciar sesión.', 'Cerrar', { duration: 4000 });
           this.isRegisterMode.set(false);
