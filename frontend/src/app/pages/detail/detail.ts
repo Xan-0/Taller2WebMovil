@@ -33,7 +33,7 @@ export class Detail {
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.http.get<Tarea>(`${environment.apiUrl}/tareas/`).subscribe({
+      this.http.get<Tarea>(`${environment.apiUrl}/tareas`).subscribe({
         next: (tareas: any) => {
           const encontrada = tareas.find((t: Tarea) => t.id === Number(id));
           if (encontrada) {

@@ -53,7 +53,7 @@ Verás todos los endpoints agrupados por categorías (Autenticación y Tareas).
 
 #### Probar el CRUD de Tareas:
 
-- Usa POST /tareas/ para crear una tarea, GET /tareas/ para listar las tareas del usuario autenticado, y PUT o DELETE usando el id de la tarea para verificar la modificación y eliminación.
+- Usa POST /tareas para crear una tarea, GET /tareas para listar las tareas del usuario autenticado, y PUT o DELETE usando el id de la tarea para verificar la modificación y eliminación.
 
 <br>
 
