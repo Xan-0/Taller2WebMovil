@@ -32,7 +32,7 @@ def register(user_data: UsuarioCreate, db: Session = Depends(get_db)):
 @router.post("/login")
 def login(user_data: UsuarioLogin, db: Session = Depends(get_db)):
     """Valida las credenciales del usuario y retorna un token JWT."""
-    user = db.query(Usuario).filter(Usuario.uid == user_data.uid).first()
+    user = db.query(Usuario).filter(Usuario.nombre == user_data.nombre).first()
     
     if not user or not verify_password(user_data.password, user.password_hash):
         raise HTTPException(
