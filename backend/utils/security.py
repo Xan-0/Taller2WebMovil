@@ -39,24 +39,27 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 
 # Dependencia de Autenticación
+from fastapi.security import OAuth2PasswordBearer
 
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)) -> Usuario:
+# El parámetro tokenUrl apunta a la ruta donde el usuario se loguea para obtener el token
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> Usuario:
     """Valida el token JWT y retorna el usuario autenticado actual."""
-    token = credentials.credentials
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="No se pudo validar las credenciales de autenticación",
-        headers={"WWW-Authenticate": "Bearer"},
+        headers={"Authorization": "Bearer"},
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        nombre: str = payload.get("sub")
-        if nombre is None:
+        user_id: str = payload.get("sub")
+        if user_id is None:
             raise credentials_exception
     except jwt.PyJWTError:
         raise credentials_exception
         
-    user = db.query(Usuario).filter(Usuario.nombre == nombre).first()
+    user = db.query(Usuario).filter(Usuario.uid == user_id).first()
     if user is None:
         raise credentials_exception
     return user
