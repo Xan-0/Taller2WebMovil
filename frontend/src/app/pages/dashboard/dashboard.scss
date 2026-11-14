@@ -20,7 +20,7 @@
 
   mat-form-field {
     flex: 1;
-    min-width: 180px;
+    min-width: 160px;
   }
 }
 
@@ -28,6 +28,21 @@
   display: flex;
   gap: 10px;
   margin-top: 10px;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+
+  .spacer { flex: 1 1 auto; }
+
+  .orden-field {
+    width: 220px;
+    max-width: 100%;
+  }
 }
 
 .spinner-container {
@@ -44,7 +59,13 @@
   color: #667;
 }
 .error-msg { color: #c62828; }
+.error-msg.inline {
+  padding: 0 0 12px;
+  text-align: left;
+  font-size: 0.85rem;
+}
 
 @media (max-width: 600px) {
   .dashboard-container { padding: 12px; }
+  .table-header .orden-field { width: 100%; }
 }
