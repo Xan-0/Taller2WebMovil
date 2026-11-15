@@ -4,5 +4,6 @@ sqlalchemy
 psycopg2
 pydantic
 pydantic-settings
+pydantic[email]
 pyjwt
 bcrypt
