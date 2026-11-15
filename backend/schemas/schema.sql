@@ -47,7 +47,7 @@ CREATE TABLE eventos (
     nombre text NOT NULL,
     descripcion text,
     distancia_maxima_metros NUMERIC(10,1) NOT NULL DEFAULT 200
-    CHECK (distancia_maxima_metros >= 10)
+    CHECK (distancia_maxima_metros >= 10),
 
     ubicacion_url text NOT NULL,
     latitud NUMERIC(10, 8) NOT NULL,    -- Para validar la distancia real por GPS
