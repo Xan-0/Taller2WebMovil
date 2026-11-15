@@ -13,6 +13,7 @@ export interface Tarea {
     duracion_minutos: number;
     estado: string;
     prioridad?: string;
+    categoria?: string;
 }
 
 export type TareaCreate = Omit<Tarea, 'id' | 'uid'>;

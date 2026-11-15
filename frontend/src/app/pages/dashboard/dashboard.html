@@ -3,6 +3,7 @@
   <span class="spacer"></span>
   <button mat-button color="accent" routerLink="/calendar">Calendario</button>
   <button mat-button color="accent" routerLink="/kanban">Acceso a Kanban</button>
+  <button mat-button color="accent" routerLink="/eventos">Eventos</button>
   <button mat-button color="accent" routerLink="/profile">Ajustes del Usuario</button>
   <button mat-raised-button color="warn" (click)="logout()">Cerrar Sesión</button>
 </mat-toolbar>
@@ -20,6 +21,9 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Título</mat-label>
           <input matInput formControlName="titulo" placeholder="Ej. Estudiar para la interrogación">
+          @if (tareaForm.get('titulo')?.hasError('required') && tareaForm.get('titulo')?.touched) {
+            <mat-error>El título es obligatorio</mat-error>
+          }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
@@ -33,6 +37,28 @@
             <input matInput type="date" formControlName="fecha">
           </mat-form-field>
 
+          <mat-form-field appearance="outline">
+            <mat-label>Hora de inicio</mat-label>
+            <input matInput type="time" formControlName="hora">
+            @if (tareaForm.get('hora')?.hasError('required')) {
+              <mat-error>Selecciona una hora</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Duración (minutos)</mat-label>
+            <input matInput type="number" min="1" max="1439" step="5" formControlName="duracion_minutos">
+            @if (tareaForm.get('duracion_minutos')?.invalid) {
+              <mat-error>Entre 1 y 1439 minutos</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        @if (tareaForm.hasError('fueraDeDia')) {
+          <p class="error-msg inline">La tarea debe terminar antes de las 24:00. Reduce la duración o adelanta la hora.</p>
+        }
+
+        <div class="form-row">
           <mat-form-field appearance="outline">
             <mat-label>Estado</mat-label>
             <mat-select formControlName="estado">
@@ -50,6 +76,15 @@
               <mat-option value="alta">Alta</mat-option>
             </mat-select>
           </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Categoría</mat-label>
+            <mat-select formControlName="categoria">
+              <mat-option value="general">General</mat-option>
+              <mat-option value="trabajo">Trabajo</mat-option>
+              <mat-option value="estudio">Estudio</mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
 
         <div class="form-actions">
@@ -65,8 +100,17 @@
   </mat-card>
 
   <mat-card class="table-card">
-    <mat-card-header>
+    <mat-card-header class="table-header">
       <mat-card-title>Mis Tareas</mat-card-title>
+      <span class="spacer"></span>
+      <mat-form-field appearance="outline" class="orden-field subscript-none">
+        <mat-label>Ordenar por</mat-label>
+        <mat-select [value]="orden()" (selectionChange)="orden.set($event.value)">
+          @for (op of opcionesOrden; track op.value) {
+            <mat-option [value]="op.value">{{ op.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
     </mat-card-header>
 
     <mat-card-content>
@@ -76,11 +120,11 @@
         </div>
       } @else if (tareasResource.error()) {
         <p class="error-msg">Error al cargar las tareas desde el servidor.</p>
-      } @else if (tareasResource.value()?.length === 0) {
+      } @else if (tareasOrdenadas().length === 0) {
         <p class="empty-msg">No tienes tareas registradas actualmente.</p>
       } @else {
-        <table mat-table [dataSource]="tareasResource.value() || []" class="mat-elevation-z1 full-width">
-          
+        <table mat-table [dataSource]="tareasOrdenadas()" class="mat-elevation-z1 full-width">
+
           <ng-container matColumnDef="titulo">
             <th mat-header-cell *matHeaderCellDef>Título</th>
             <td mat-cell *matCellDef="let task"> <strong>{{ task.titulo }}</strong> </td>
@@ -96,6 +140,11 @@
             <td mat-cell *matCellDef="let task"> {{ task.fecha }} </td>
           </ng-container>
 
+          <ng-container matColumnDef="horario">
+            <th mat-header-cell *matHeaderCellDef>Horario</th>
+            <td mat-cell *matCellDef="let task"> {{ formatoHorario(task) }} </td>
+          </ng-container>
+
           <ng-container matColumnDef="estado">
             <th mat-header-cell *matHeaderCellDef>Estado</th>
             <td mat-cell *matCellDef="let task">
@@ -106,6 +155,11 @@
           <ng-container matColumnDef="prioridad">
             <th mat-header-cell *matHeaderCellDef>Prioridad</th>
             <td mat-cell *matCellDef="let task"> {{ task.prioridad || '-' }} </td>
+          </ng-container>
+
+          <ng-container matColumnDef="categoria">
+            <th mat-header-cell *matHeaderCellDef>Categoría</th>
+            <td mat-cell *matCellDef="let task"> {{ task.categoria || '-' }} </td>
           </ng-container>
 
           <ng-container matColumnDef="acciones">
