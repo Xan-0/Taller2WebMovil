@@ -28,3 +28,8 @@
   color: #667;
   margin-top: 40px;
 }
+
+@media (max-width: 600px) {
+  .detail-container { padding: 16px 12px; }
+  .detail-card { padding: 12px; }
+}

@@ -1,6 +1,5 @@
 .navbar {
   display: flex;
-  justify-content: space-between;
   .spacer { flex: 1; }
 }
 
@@ -57,7 +56,12 @@
 }
 
 @media (max-width: 520px) {
+  .profile-container { padding: 16px 12px; }
+  .profile-container .profile-card { padding: 8px; }
   .profile-container .profile-card .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+
+

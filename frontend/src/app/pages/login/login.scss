@@ -3,7 +3,8 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  padding: 16px;
+  min-height: 100dvh;
+  padding: calc(16px + var(--sat)) 16px 16px;
   box-sizing: border-box;
 }
 
@@ -61,3 +62,6 @@ button.full-width {
   text-align: center;
   margin-top: 12px;
 }
+
+
+

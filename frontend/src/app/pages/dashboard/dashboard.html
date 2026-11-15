@@ -127,44 +127,44 @@
 
           <ng-container matColumnDef="titulo">
             <th mat-header-cell *matHeaderCellDef>Título</th>
-            <td mat-cell *matCellDef="let task"> <strong>{{ task.titulo }}</strong> </td>
+            <td mat-cell *matCellDef="let task" data-label="Título"> <strong>{{ task.titulo }}</strong> </td>
           </ng-container>
 
           <ng-container matColumnDef="descripcion">
             <th mat-header-cell *matHeaderCellDef>Descripción</th>
-            <td mat-cell *matCellDef="let task"> {{ task.descripcion || '-' }} </td>
+            <td mat-cell *matCellDef="let task" data-label="Descripción"> {{ task.descripcion || '-' }} </td>
           </ng-container>
 
           <ng-container matColumnDef="fecha">
             <th mat-header-cell *matHeaderCellDef>Fecha</th>
-            <td mat-cell *matCellDef="let task"> {{ task.fecha }} </td>
+            <td mat-cell *matCellDef="let task" data-label="Fecha"> {{ task.fecha }} </td>
           </ng-container>
 
           <ng-container matColumnDef="horario">
             <th mat-header-cell *matHeaderCellDef>Horario</th>
-            <td mat-cell *matCellDef="let task"> {{ formatoHorario(task) }} </td>
+            <td mat-cell *matCellDef="let task" data-label="Horario"> {{ formatoHorario(task) }} </td>
           </ng-container>
 
           <ng-container matColumnDef="estado">
             <th mat-header-cell *matHeaderCellDef>Estado</th>
-            <td mat-cell *matCellDef="let task">
+            <td mat-cell *matCellDef="let task" data-label="Estado">
               <span class="badge {{ task.estado.replace(' ', '-') }}">{{ task.estado }}</span>
             </td>
           </ng-container>
 
           <ng-container matColumnDef="prioridad">
             <th mat-header-cell *matHeaderCellDef>Prioridad</th>
-            <td mat-cell *matCellDef="let task"> {{ task.prioridad || '-' }} </td>
+            <td mat-cell *matCellDef="let task" data-label="Prioridad"> {{ task.prioridad || '-' }} </td>
           </ng-container>
 
           <ng-container matColumnDef="categoria">
             <th mat-header-cell *matHeaderCellDef>Categoría</th>
-            <td mat-cell *matCellDef="let task"> {{ task.categoria || '-' }} </td>
+            <td mat-cell *matCellDef="let task" data-label="Categoría"> {{ task.categoria || '-' }} </td>
           </ng-container>
 
           <ng-container matColumnDef="acciones">
             <th mat-header-cell *matHeaderCellDef>Acciones</th>
-            <td mat-cell *matCellDef="let task">
+            <td mat-cell *matCellDef="let task" data-label="Acciones">
               <button mat-button color="primary" (click)="cargarParaEditar(task)">Editar</button>
               <button mat-button color="warn" (click)="eliminarTarea(task.id)">Eliminar</button>
             </td>
@@ -177,3 +177,6 @@
     </mat-card-content>
   </mat-card>
 </div>
+
+
+

@@ -1,6 +1,5 @@
 .navbar {
   display: flex;
-  justify-content: space-between;
   .spacer { flex: 1; }
 }
 
@@ -52,6 +51,20 @@
         h4 { margin: 0 0 6px; color: #3949ab; }
         p { margin: 0; color: #666; font-size: 0.9rem; }
       }
+    }
+  }
+}
+
+@media (max-width: 720px) {
+  .kanban-container {
+    padding: 16px 12px;
+    gap: 14px;
+
+    .kanban-column {
+      flex: 1 1 100%;
+      max-width: 100%;
+      min-width: 0;
+      padding: 12px;
     }
   }
 }

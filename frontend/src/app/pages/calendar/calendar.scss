@@ -1,6 +1,5 @@
 .navbar {
   display: flex;
-  justify-content: space-between;
   .spacer { flex: 1; }
 }
 
@@ -56,6 +55,20 @@
         h4 { margin: 0 0 6px; color: #283593; }
         p { margin: 0 0 12px; color: #555; font-size: 0.9rem; }
       }
+    }
+  }
+}
+
+@media (max-width: 720px) {
+  .calendar-container {
+    padding: 16px 12px;
+    gap: 16px;
+
+    .calendar-card, .tasks-card {
+      flex: 1 1 100%;
+      max-width: 100%;
+      min-width: 0;
+      padding: 8px;
     }
   }
 }
