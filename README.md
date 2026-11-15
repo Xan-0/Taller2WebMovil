@@ -1,6 +1,6 @@
-# Taller2WebMovil
-Gestor de Tareas simple en AngularTS, Python FastAPI y PostgreSQL
-
+# Taller2WebMovil -> Talleres 2 y 3
+Gestor de Tareas diarias y Eventos en AngularTS, Python FastAPI y PostgreSQL
+- Deploy mediante Railway y Capacitor
 <br>
 
 # Ejecución:

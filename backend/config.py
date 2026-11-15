@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
     # Configuración para indicarle dónde buscar el archivo .env
-    model_config = SettingsConfigDict(env_file="backend/.env", extra="ignore")
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 # Instancia global de configuración
 settings = Settings()
