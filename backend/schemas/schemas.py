@@ -18,7 +18,7 @@ class UsuarioResponse(BaseModel):
         from_attributes = True
 
 class UsuarioLogin(BaseModel):
-    email: EmailStr  # Usamos email para el login según el nuevo esquema
+    email: EmailStr
     password: str
 
 class UsuarioUpdate(BaseModel):
@@ -65,14 +65,14 @@ class TareaResponse(BaseModel):
         from_attributes = True
 
 
-# --- Esquemas de Eventos y Asistencias (NUEVO) ---
+# --- Esquemas de Eventos y Asistencias ---
 class EventoCreate(BaseModel):
     nombre: str
     descripcion: Optional[str] = None
     distancia_maxima_metros: float = Field(ge=10, default=200.0)
     ubicacion_url: str
-    latitud: float = Field(ge=-90, le=90)   # Validación estándar de latitud
-    longitud: float = Field(ge=-180, le=180) # Validación estándar de longitud
+    latitud: float = Field(ge=-90, le=90)
+    longitud: float = Field(ge=-180, le=180)
     fecha_inicio: str
     duracion_dias: int = Field(ge=1, default=1)
 
@@ -93,9 +93,9 @@ class EventoResponse(BaseModel):
 
 class AsistenciaCreate(BaseModel):
     id_evento: int
-    # Las coordenadas actuales del dispositivo móvil para validar la proximidad por GPS
-    latitud_actual: float = Field(ge=-90, le=90)
-    longitud_actual: float = Field(ge=-180, le=180)
+    # Coordenadas opcionales: si el dispositivo las entrega se valida la proximidad
+    latitud_actual: Optional[float] = Field(default=None, ge=-90, le=90)
+    longitud_actual: Optional[float] = Field(default=None, ge=-180, le=180)
 
 class AsistenciaResponse(BaseModel):
     id_evento: int

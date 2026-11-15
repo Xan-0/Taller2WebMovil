@@ -15,14 +15,27 @@
     <mat-card-content>
       <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
 
+        @if (isRegisterMode()) {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nombre de Usuario</mat-label>
+            <input matInput formControlName="nombre" placeholder="Ingresa tu usuario">
+            @if (authForm.get('nombre')?.hasError('required') && authForm.get('nombre')?.touched) {
+              <mat-error>El nombre de usuario es obligatorio</mat-error>
+            }
+            @if (authForm.get('nombre')?.hasError('minlength')) {
+              <mat-error>Mínimo 3 caracteres</mat-error>
+            }
+          </mat-form-field>
+        }
+
         <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Nombre de Usuario</mat-label>
-          <input matInput formControlName="nombre" placeholder="Ingresa tu usuario">
-          @if (authForm.get('nombre')?.hasError('required') && authForm.get('nombre')?.touched) {
-            <mat-error>El nombre de usuario es obligatorio</mat-error>
+          <mat-label>Correo electrónico</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="tu@correo.cl">
+          @if (authForm.get('email')?.hasError('required') && authForm.get('email')?.touched) {
+            <mat-error>El correo es obligatorio</mat-error>
           }
-          @if (authForm.get('nombre')?.hasError('minlength')) {
-            <mat-error>Mínimo 3 caracteres</mat-error>
+          @if (authForm.get('email')?.hasError('email')) {
+            <mat-error>Ingresa un correo válido</mat-error>
           }
         </mat-form-field>
 

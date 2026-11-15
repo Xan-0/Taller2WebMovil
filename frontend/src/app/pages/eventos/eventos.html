@@ -1,0 +1,183 @@
+<mat-toolbar color="primary" class="navbar">
+  <span>Eventos</span>
+  <span class="spacer"></span>
+  <button mat-button routerLink="/dashboard">Dashboard</button>
+  <button mat-button routerLink="/calendar">Calendario</button>
+  <button mat-button routerLink="/kanban">Kanban</button>
+</mat-toolbar>
+
+<div class="eventos-container">
+
+  <!-- Confirmar visita -->
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Confirmar visita a un evento</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p class="hint">
+        Ingresa el número identificador del evento
+        @if (esNativa) { o escanea su código QR }.
+      </p>
+      <form [formGroup]="confirmarForm" (ngSubmit)="confirmarManual()" class="confirmar-form">
+        <mat-form-field appearance="outline">
+          <mat-label>N° identificador</mat-label>
+          <input matInput type="number" min="1" formControlName="idEvento" placeholder="Ej. 12">
+          @if (confirmarForm.get('idEvento')?.hasError('required') && confirmarForm.get('idEvento')?.touched) {
+            <mat-error>Ingresa el número del evento</mat-error>
+          }
+          @if (confirmarForm.get('idEvento')?.hasError('min') || confirmarForm.get('idEvento')?.hasError('pattern')) {
+            <mat-error>Debe ser un número entero positivo</mat-error>
+          }
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="confirmando() || confirmarForm.invalid">
+          Confirmar visita
+        </button>
+
+        @if (esNativa) {
+          <button mat-raised-button color="accent" type="button" [disabled]="confirmando()" (click)="escanearQr()">
+            <mat-icon>qr_code_scanner</mat-icon> Escanear QR
+          </button>
+        }
+      </form>
+      @if (confirmando()) {
+        <div class="spinner-inline"><mat-spinner diameter="28"></mat-spinner></div>
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <!-- QR del evento (host) -->
+  @if (qrActivo(); as qr) {
+    <mat-card class="qr-card">
+      <mat-card-header>
+        <mat-card-title>QR de "{{ qr.nombre }}"</mat-card-title>
+        <mat-card-subtitle>N° identificador: {{ qr.id }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content class="qr-content">
+        <img [src]="qr.dataUrl" alt="Código QR del evento {{ qr.id }}">
+        <p class="hint">Muestra este código a los asistentes para que lo escaneen desde la app.</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button (click)="cerrarQr()">Cerrar</button>
+      </mat-card-actions>
+    </mat-card>
+  }
+
+  <!-- Crear evento -->
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Nuevo evento</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="eventoForm" (ngSubmit)="crearEvento()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre">
+          @if (eventoForm.get('nombre')?.invalid && eventoForm.get('nombre')?.touched) {
+            <mat-error>Obligatorio (mínimo 3 caracteres)</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Descripción</mat-label>
+          <textarea matInput formControlName="descripcion" rows="2"></textarea>
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de inicio</mat-label>
+            <input matInput type="date" formControlName="fecha_inicio">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Duración (días)</mat-label>
+            <input matInput type="number" min="1" formControlName="duracion_dias">
+            @if (eventoForm.get('duracion_dias')?.invalid) {
+              <mat-error>Mínimo 1 día</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Distancia máxima (m)</mat-label>
+            <input matInput type="number" min="10" formControlName="distancia_maxima_metros">
+            @if (eventoForm.get('distancia_maxima_metros')?.invalid) {
+              <mat-error>Mínimo 10 metros</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Latitud</mat-label>
+            <input matInput type="number" step="any" formControlName="latitud">
+            @if (eventoForm.get('latitud')?.invalid && eventoForm.get('latitud')?.touched) {
+              <mat-error>Entre -90 y 90</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Longitud</mat-label>
+            <input matInput type="number" step="any" formControlName="longitud">
+            @if (eventoForm.get('longitud')?.invalid && eventoForm.get('longitud')?.touched) {
+              <mat-error>Entre -180 y 180</mat-error>
+            }
+          </mat-form-field>
+
+          <button mat-stroked-button type="button" class="ubicacion-btn" [disabled]="obteniendoUbicacion()" (click)="usarMiUbicacion()">
+            <mat-icon>my_location</mat-icon> Usar mi ubicación
+          </button>
+        </div>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="eventoForm.invalid">
+          Crear evento
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Lista -->
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Eventos disponibles</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (eventosResource.isLoading()) {
+        <div class="spinner-inline"><mat-spinner diameter="40"></mat-spinner></div>
+      } @else if (eventosResource.error()) {
+        <p class="error-msg">Error al cargar los eventos.</p>
+      } @else if ((eventosResource.value() ?? []).length === 0) {
+        <p class="empty-msg">Aún no hay eventos. Crea el primero arriba.</p>
+      } @else {
+        <div class="evento-list">
+          @for (ev of eventosResource.value(); track ev.id) {
+            <mat-card class="evento-item">
+              <mat-card-content>
+                <div class="evento-head">
+                  <span class="evento-id">ID {{ ev.id }}</span>
+                  @if (asistidos().has(ev.id)) {
+                    <span class="badge completada">Visita confirmada</span>
+                  }
+                </div>
+                <h4>{{ ev.nombre }}</h4>
+                @if (ev.descripcion) { <p>{{ ev.descripcion }}</p> }
+                <p class="meta">
+                  {{ ev.fecha_inicio }} · {{ ev.duracion_dias }} día(s) · radio {{ ev.distancia_maxima_metros }} m
+                </p>
+                <a [href]="ev.ubicacion_url" target="_blank" rel="noopener">Ver en el mapa</a>
+              </mat-card-content>
+              <mat-card-actions>
+                @if (!asistidos().has(ev.id)) {
+                  <button mat-button color="primary" [disabled]="confirmando()" (click)="confirmar(ev.id)">Confirmar visita</button>
+                }
+                @if (ev.usuario_host === miUid) {
+                  <button mat-button (click)="mostrarQr(ev)"><mat-icon>qr_code_2</mat-icon> Ver QR</button>
+                  <button mat-button color="warn" (click)="eliminarEvento(ev)">Eliminar</button>
+                }
+              </mat-card-actions>
+            </mat-card>
+          }
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
