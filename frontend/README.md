@@ -33,18 +33,20 @@ El backend lee su configuración desde un archivo `.env` en la raíz del proyect
 > Para probar rápido sin PostgreSQL: `DATABASE_URL=sqlite:///./taller.db`
 
 ## 3. Backend
-Desde la carpeta backend/:
 
 ```bash
 conda env create -f environment.yml
 conda activate taller2WM-backend
+cd backend
 uvicorn main:app --reload
 ```
 
 API: http://localhost:8000 · Documentación: http://localhost:8000/docs
 
 ## 4. Frontend
-En otra terminal, desde la carpeta frontend/:
+En otra terminal:
+
+(cambiar url de la API en environments/environment.prod.ts para que apunte a la url local del backend)
 
 ```bash
 cd frontend
