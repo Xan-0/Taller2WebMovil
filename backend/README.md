@@ -4,10 +4,13 @@ Información sobre inicialización de la base de datos en *database/database.py*
 
 ## Parte para ejecutar
 
-En anaconda prompt o similar, desde la carpeta de backend/ ejecutar:
+(Después de crear las variables de entorno requeridas en un archivo 'backend/.env', de acuerdo con backend/config.py)
+
+En anaconda prompt o similar, desde la carpeta raíz ejecutar:
 ```shell
 (base) conda env create -f environment.yml
 (base) conda activate taller2WM-backend
+(taller2WM-backend) cd backend
 (taller2WM-backend) uvicorn main:app --reload --host 127.0.0.1 --port 8000
 ```
 
