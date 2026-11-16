@@ -66,58 +66,140 @@
 }
 
 @media (max-width: 720px) {
-  .dashboard-container { padding: 12px; gap: 16px; }
-  .form-card, .table-card { padding: 8px 4px 4px; }
-  .table-header .orden-field { width: 100%; }
-  .form-row mat-form-field { flex: 1 1 100%; min-width: 0; }
-  .form-actions { flex-wrap: wrap; button { flex: 1 1 140px; } }
+  
+/* Evitar que la tabla comprima demasiado sus columnas */
+.table-card mat-card-content {
+  overflow-x: auto;
+}
 
-  // La tabla de 8 columnas no cabe en un celular: cada fila pasa a ser una tarjeta
-  .table-card mat-card-content { overflow-x: visible; }
+table.mat-mdc-table {
+  width: 100%;
+  min-width: 900px;
+  table-layout: auto;
+}
+
+/* Evitar que los botones se dividan en varias líneas */
+td[data-label="Acciones"] {
+  white-space: nowrap;
+}
+
+td[data-label="Acciones"] button {
+  white-space: nowrap;
+}
+
+/* Diseño responsive */
+@media (max-width: 900px) {
+
+  .dashboard-container {
+    padding: 12px;
+    gap: 16px;
+  }
+
+  .form-card,
+  .table-card {
+    padding: 8px 4px 4px;
+  }
+
+  .table-header .orden-field {
+    width: 100%;
+  }
+
+  .form-row mat-form-field {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .form-actions {
+    flex-wrap: wrap;
+  }
+
+  .form-actions button {
+    flex: 1 1 140px;
+  }
+
+  /* La tabla se transforma en tarjetas */
+  .table-card mat-card-content {
+    overflow-x: visible;
+  }
 
   table.mat-mdc-table {
     display: block;
     width: 100%;
+    min-width: 0;
+    border: 0;
+  }
 
-    thead { display: none; }
-    tbody { display: block; }
+  /* Ocultar encabezados de la tabla */
+  tr.mat-mdc-header-row,
+  thead {
+    display: none !important;
+  }
 
-    tr.mat-mdc-row {
-      display: block;
-      height: auto;
-      margin-bottom: 12px;
-      padding: 6px 0;
-      background: #fff;
-      border: 1px solid rgba(63, 81, 181, 0.15);
-      border-left: 4px solid #7c4dff;
-      border-radius: 14px;
-      box-shadow: 0 2px 8px rgba(63, 81, 181, 0.08);
-    }
+  tbody {
+    display: block;
+    width: 100%;
+  }
 
-    td.mat-mdc-cell {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 6px 14px;
-      border: 0;
-      min-height: 0;
-      text-align: right;
-      word-break: break-word;
+  /* Cada tarea es una tarjeta */
+  tr.mat-mdc-row {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    margin-bottom: 14px;
+    padding: 8px 0;
+    background: #fff;
+    border: 1px solid rgba(63, 81, 181, 0.15);
+    border-left: 4px solid #7c4dff;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(63, 81, 181, 0.08);
+  }
 
-      &::before {
-        content: attr(data-label);
-        flex: 0 0 auto;
-        font-weight: 600;
-        color: #3949ab;
-        text-align: left;
-      }
-    }
+  /* Alinear nombre del campo y contenido */
+  td.mat-mdc-cell {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    border: 0;
+    min-height: 0;
+    text-align: right;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
 
-    td.mat-mdc-cell:last-child { justify-content: flex-end; }
-    td.mat-mdc-cell:last-child::before { margin-right: auto; }
+  /* Mostrar nombre de cada campo */
+  td.mat-mdc-cell::before {
+    content: attr(data-label);
+    flex: 0 0 95px;
+    font-weight: 600;
+    color: #3949ab;
+    text-align: left;
+  }
+
+  /* Estado y prioridad */
+  .badge {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  /* Acciones */
+  td[data-label="Acciones"] {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  td[data-label="Acciones"]::before {
+    margin-right: auto;
+  }
+
+  td[data-label="Acciones"] button {
+    white-space: nowrap;
   }
 }
 
-
-
+}
