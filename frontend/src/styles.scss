@@ -388,6 +388,17 @@ $page-containers: '.login-container, .dashboard-container, .eventos-container, .
   from { opacity: 0; transform: scale(0.8) translateY(30px); filter: blur(6px); }
   to   { opacity: 1; transform: none; filter: none; }
 }
+.rocket-panel .mat-mdc-dialog-container {
+  --mat-dialog-container-color: transparent;
+  --mat-dialog-container-shape: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  animation: none;
+}
+.rocket-backdrop.cdk-overlay-dark-backdrop { background: rgba(2, 3, 12, 0.94); }
+.rocket-panel .mat-mdc-dialog-surface { background: transparent; box-shadow: none; border-radius: 0; }
 .cdk-overlay-dark-backdrop { background: rgba(2, 3, 12, 0.78); }
 
 .mat-mdc-snack-bar-container {

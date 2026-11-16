@@ -10,6 +10,8 @@ import { RouterLink } from '@angular/router';
 import { TareasService } from '../../services/tareas.service';
 import { UsuarioService } from '../../services/usuario.service';
 import { MatToolbar } from '@angular/material/toolbar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { BiometricService, EstadoHuella } from '../../services/biometric.service';
 
 @Component({
   selector: 'app-profile',
@@ -23,7 +25,8 @@ import { MatToolbar } from '@angular/material/toolbar';
     MatFormFieldModule,
     MatInputModule,
     RouterLink,
-    MatToolbar
+    MatToolbar,
+    MatSnackBarModule
 ],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss']
@@ -32,6 +35,10 @@ export class Profile implements OnInit {
   private fb = inject(FormBuilder);
   private tareasService = inject(TareasService);
   private usuarioService = inject(UsuarioService);
+  private bio = inject(BiometricService);
+  private snackBar = inject(MatSnackBar);
+
+  huella = signal<EstadoHuella>('web');
 
   tareas = signal<any[]>([]);
   
@@ -40,8 +47,15 @@ export class Profile implements OnInit {
     password: ['']
   });
 
-  ngOnInit() {
+  async ngOnInit() {
     this.cargarDatosUsuario();
+    this.huella.set(await this.bio.estado());
+  }
+
+  async desactivarHuella() {
+    await this.bio.desactivar();
+    this.huella.set(await this.bio.estado());
+    this.snackBar.open('Acceso con huella desactivado', 'Cerrar', { duration: 3000 });
   }
 
   cargarDatosUsuario() {
@@ -73,8 +87,14 @@ export class Profile implements OnInit {
       }
 
       this.usuarioService.actualizarPerfil(datosAEnviar).subscribe({
-        next: (res) => {
+        next: async (res) => {
           console.log('Perfil actualizado correctamente', res);
+          // Si cambió la contraseña, la guardada para la huella queda obsoleta
+          if (datosAEnviar.password && this.huella() === 'listo') {
+            await this.bio.desactivar();
+            this.huella.set(await this.bio.estado());
+            this.snackBar.open('Cambiaste tu contraseña: vuelve a activar la huella al iniciar sesión.', 'Cerrar', { duration: 6000 });
+          }
           alert('Perfil actualizado con éxito');
         },
         error: (err) => {

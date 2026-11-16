@@ -25,6 +25,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TareasService, Tarea, TareaCreate } from '../../services/tareas.service';
 import { AuthService } from '../../services/auth.service';
 import { FxService } from '../../services/fx.service';
+import { RocketService } from '../../services/rocket.service';
 import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
 
 export type Orden = 'llegada' | 'fecha' | 'estado' | 'prioridad' | 'categoria';
@@ -68,6 +69,7 @@ export class Dashboard {
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private fx = inject(FxService);
+  private rocket = inject(RocketService);
 
   displayedColumns: string[] = [
     'titulo',
@@ -198,7 +200,7 @@ export class Dashboard {
           this.resetForm();
           this.refreshTrigger.update((n) => n + 1);
           if (payload.estado === 'completada' && anterior?.estado !== 'completada') {
-            this.celebrar(currentId);
+            this.celebrar(currentId, payload.titulo);
           }
         },
         error: () => this.snackBar.open('Error al actualizar', 'Cerrar', { duration: 3000 }),
@@ -237,10 +239,12 @@ export class Dashboard {
   }
 
   /** Efecto de tarea completada: onda de energía + estrellas */
-  private celebrar(id: number) {
+  private celebrar(id: number, titulo: string) {
     this.marcarFx(id, 'complete', 1400);
     // espera a que la tabla se vuelva a dibujar con los datos nuevos
     setTimeout(() => this.fx.burst(this.filaDe(id), 'complete'), 350);
+    // luego aparece el cohete (se lanza agitando el celular)
+    setTimeout(() => this.rocket.lanzar(titulo), 1100);
   }
 
   /** Botón rápido "Completar" de cada fila */
@@ -250,7 +254,7 @@ export class Dashboard {
       next: () => {
         this.snackBar.open('¡Misión cumplida!', 'Cerrar', { duration: 2500 });
         this.refreshTrigger.update((n) => n + 1);
-        this.celebrar(tarea.id);
+        this.celebrar(tarea.id, tarea.titulo);
       },
       error: () => this.snackBar.open('No se pudo completar la tarea', 'Cerrar', { duration: 3000 }),
     });

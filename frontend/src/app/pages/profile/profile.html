@@ -46,6 +46,23 @@
           Guardar Cambios
         </button>
       </form>
+
+      @if (huella() !== 'web') {
+        <h3 class="section-title">Seguridad</h3>
+        <div class="huella-row">
+          <mat-icon>fingerprint</mat-icon>
+          <div class="huella-texto">
+            @switch (huella()) {
+              @case ('listo') { <strong>Acceso con huella activado</strong><span>Puedes entrar con tu huella desde la pantalla de inicio.</span> }
+              @case ('inactivo') { <strong>Acceso con huella desactivado</strong><span>Cierra sesión e inicia con tu contraseña para activarlo.</span> }
+              @case ('sin-sensor') { <strong>Sin sensor de huella</strong><span>Este celular no tiene sensor biométrico o no hay huellas registradas.</span> }
+            }
+          </div>
+          @if (huella() === 'listo') {
+            <button mat-stroked-button type="button" (click)="desactivarHuella()">Desactivar</button>
+          }
+        </div>
+      }
     </mat-card-content>
   </mat-card>
 </div>

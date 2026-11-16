@@ -218,32 +218,80 @@ export class Eventos {
       });
   }
 
-  /** Solo APK: escanea un QR que contiene el número identificador del evento */
+  /** Enfoca el campo del número identificador (alternativa cuando no se puede escanear) */
+  private enfocarId() {
+    setTimeout(() => document.querySelector<HTMLInputElement>('input[formControlName="idEvento"]')?.focus(), 150);
+  }
+
+  /** Extrae el id del evento de una invitación: "evento:12", un enlace con ?evento=12 o /eventos/12 */
+  private extraerIdEvento(crudo: string): number | null {
+    const texto = (crudo ?? '').trim();
+    const patrones = [/^evento:(\d+)$/i, /[?&]evento=(\d+)/i, /\/eventos?\/(\d+)/i, /^(\d+)$/];
+    for (const p of patrones) {
+      const m = p.exec(texto);
+      if (m) return Number(m[1]);
+    }
+    return null;
+  }
+
+  /**
+   * Escanea el QR de invitación con la cámara (solo en la APK).
+   * Si el dispositivo no tiene cámara/escáner o se niega el permiso, avisa y deja
+   * como alternativa ingresar el número identificador a mano.
+   */
   async escanearQr() {
+    if (!this.esNativa) {
+      this.snackBar.open(
+        'El escáner con cámara está disponible en la app Android. Aquí ingresa el número identificador del evento.',
+        'Cerrar',
+        { duration: 6000 },
+      );
+      this.enfocarId();
+      return;
+    }
+
     try {
       const { BarcodeScanner, BarcodeFormat } = await import('@capacitor-mlkit/barcode-scanning');
 
-      const permisos = await BarcodeScanner.requestPermissions();
+      // 1) ¿el dispositivo puede escanear? (cámara disponible)
+      const { supported } = await BarcodeScanner.isSupported();
+      if (!supported) {
+        this.snackBar.open('Este dispositivo no tiene cámara compatible para escanear. Ingresa el número del evento.', 'Cerrar', { duration: 6000 });
+        this.enfocarId();
+        return;
+      }
+
+      // 2) permiso de cámara
+      let permisos = await BarcodeScanner.checkPermissions();
       if (permisos.camera !== 'granted' && permisos.camera !== 'limited') {
-        this.snackBar.open('Necesitas dar permiso de cámara para escanear el QR.', 'Cerrar', { duration: 5000 });
+        permisos = await BarcodeScanner.requestPermissions();
+      }
+      if (permisos.camera !== 'granted' && permisos.camera !== 'limited') {
+        this.snackBar
+          .open('Sin permiso de cámara no se puede escanear el QR. Puedes activarlo en Ajustes o ingresar el número a mano.', 'Ajustes', { duration: 8000 })
+          .onAction()
+          .subscribe(() => BarcodeScanner.openSettings());
+        this.enfocarId();
         return;
       }
 
-      // En Android el escáner usa un módulo de Google Play Services que puede faltar
-      const { available } = await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable();
-      if (!available) {
-        await BarcodeScanner.installGoogleBarcodeScannerModule();
-        this.snackBar.open('Instalando el módulo del escáner. Reintenta en unos segundos.', 'Cerrar', {
-          duration: 5000,
-        });
-        return;
+      // 3) en Android el escáner usa un módulo de Google Play Services que puede faltar
+      try {
+        const { available } = await BarcodeScanner.isGoogleBarcodeScannerModuleAvailable();
+        if (!available) {
+          await BarcodeScanner.installGoogleBarcodeScannerModule();
+          this.snackBar.open('Instalando el módulo del escáner. Reintenta en unos segundos.', 'Cerrar', { duration: 5000 });
+          return;
+        }
+      } catch {
+        /* en iOS este módulo no existe: se sigue con el escáner nativo */
       }
 
+      // 4) abre la cámara y lee el QR
       const { barcodes } = await BarcodeScanner.scan({ formats: [BarcodeFormat.QrCode] });
-      const crudo = barcodes[0]?.rawValue ?? '';
-      const id = Number(/(\d+)/.exec(crudo)?.[1]);
+      const id = this.extraerIdEvento(barcodes[0]?.rawValue ?? '');
       if (!id) {
-        this.snackBar.open('El QR leído no corresponde a un evento.', 'Cerrar', { duration: 4000 });
+        this.snackBar.open('Ese QR no es una invitación a un evento.', 'Cerrar', { duration: 4000 });
         return;
       }
       this.confirmarForm.patchValue({ idEvento: id });
@@ -251,7 +299,8 @@ export class Eventos {
     } catch (e: any) {
       const msg = String(e?.message ?? e ?? '');
       if (/cancel/i.test(msg)) return; // el usuario cerró el escáner
-      this.snackBar.open('No se pudo usar la cámara para escanear el QR.', 'Cerrar', { duration: 4000 });
+      this.snackBar.open('No se pudo abrir la cámara para escanear. Ingresa el número del evento a mano.', 'Cerrar', { duration: 5000 });
+      this.enfocarId();
     }
   }
 

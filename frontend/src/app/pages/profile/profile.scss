@@ -70,3 +70,18 @@
 
 
 
+
+.huella-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--panel-border);
+
+  > mat-icon { color: var(--accent); font-size: 32px; width: 32px; height: 32px; }
+  .huella-texto { flex: 1 1 200px; display: flex; flex-direction: column; gap: 2px; }
+  .huella-texto span { color: var(--muted); font-size: 0.85rem; }
+}

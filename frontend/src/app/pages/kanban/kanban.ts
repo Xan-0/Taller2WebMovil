@@ -10,6 +10,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink } from '@angular/router';
 import { TareasService, Tarea } from '../../services/tareas.service';
 import { FxService } from '../../services/fx.service';
+import { RocketService } from '../../services/rocket.service';
 import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
 
 type Estado = 'por hacer' | 'en progreso' | 'completada';
@@ -40,6 +41,7 @@ export class Kanban implements OnInit {
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
   private fx = inject(FxService);
+  private rocket = inject(RocketService);
 
   @ViewChild('hole') hole?: ElementRef<HTMLElement>;
 
@@ -103,7 +105,7 @@ export class Kanban implements OnInit {
         if (nuevoEstado === 'completada') {
           this.marcar(tarea.id, 'complete', 1400);
           setTimeout(() => this.fx.burst(this.tarjeta(tarea.id), 'complete'), 60);
-          this.snackBar.open('¡Misión cumplida!', 'Cerrar', { duration: 2500 });
+          setTimeout(() => this.rocket.lanzar(tarea.titulo), 1000);
         }
       },
       error: () => {

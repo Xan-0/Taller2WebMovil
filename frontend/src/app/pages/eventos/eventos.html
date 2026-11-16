@@ -15,8 +15,7 @@
     </mat-card-header>
     <mat-card-content>
       <p class="hint">
-        Ingresa el número identificador del evento
-        @if (esNativa) { o escanea su código QR }.
+        Escanea el código QR de la invitación o ingresa el número identificador del evento.
       </p>
       <form [formGroup]="confirmarForm" (ngSubmit)="confirmarManual()" class="confirmar-form">
         <mat-form-field appearance="outline">
@@ -34,11 +33,9 @@
           Confirmar visita
         </button>
 
-        @if (esNativa) {
-          <button mat-raised-button color="accent" type="button" [disabled]="confirmando()" (click)="escanearQr()">
-            <mat-icon>qr_code_scanner</mat-icon> Escanear QR
-          </button>
-        }
+        <button mat-stroked-button type="button" class="scan-btn" [disabled]="confirmando()" (click)="escanearQr()">
+          <mat-icon>qr_code_scanner</mat-icon> Escanear QR
+        </button>
       </form>
       @if (confirmando()) {
         <div class="spinner-inline"><mat-spinner diameter="28"></mat-spinner></div>

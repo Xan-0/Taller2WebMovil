@@ -53,6 +53,32 @@
 
       </form>
 
+      @if (!isRegisterMode()) {
+        @switch (huella()) {
+          @case ('listo') {
+            <div class="huella-box">
+              <div class="divisor"><span>o</span></div>
+              <button mat-stroked-button type="button" class="full-width huella-btn"
+                      [disabled]="verificandoHuella()" (click)="entrarConHuella()">
+                <mat-icon>fingerprint</mat-icon> Entrar con huella
+              </button>
+            </div>
+          }
+          @case ('sin-sensor') {
+            <p class="huella-aviso">
+              <mat-icon>info</mat-icon>
+              Este celular no tiene sensor de huella (o no hay huellas registradas). Entra con tu correo y contraseña.
+            </p>
+          }
+          @case ('inactivo') {
+            <p class="huella-aviso">
+              <mat-icon>fingerprint</mat-icon>
+              Inicia sesión una vez y podrás activar el acceso con huella.
+            </p>
+          }
+        }
+      }
+
       <div class="toggle-mode-container">
         <button mat-button color="accent" (click)="toggleMode()">
           {{ isRegisterMode() ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate' }}

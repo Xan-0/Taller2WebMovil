@@ -1,0 +1,134 @@
+:host { display: block; height: 100%; }
+
+.stage {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--sat) + 28px) 20px calc(var(--sab) + 24px);
+  text-align: center;
+  color: var(--text);
+  overflow: hidden;
+}
+
+.mensaje {
+  min-height: 130px;
+  z-index: 2;
+
+  h2 {
+    margin: 0 0 6px;
+    font-family: var(--font-display);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-size: clamp(1.2rem, 5vw, 1.8rem);
+    text-shadow: 0 0 20px color-mix(in srgb, var(--accent) 80%, transparent);
+    animation: pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .tarea { margin: 0 0 10px; color: var(--accent); font-weight: 600; }
+  .instruccion, .aviso {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin: 0 auto; max-width: 340px; color: var(--muted); font-size: 0.95rem;
+  }
+  .aviso { color: #fde047; }
+  .vibra { color: var(--accent); animation: rumble 0.35s linear infinite; }
+}
+
+// ---------- Cohete ----------
+.launch {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  --p: 0;
+}
+
+.rocket {
+  position: relative;
+  z-index: 2;
+  width: clamp(90px, 22vw, 130px);
+  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--accent) 60%, transparent));
+  // vibra más fuerte cuanto más se agita
+  animation: rumble calc(0.18s - var(--p) * 0.1s) linear infinite;
+  transform-origin: 50% 100%;
+}
+.rocket-svg { width: 100%; height: auto; display: block; overflow: visible; }
+
+.flame {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  transform: scaleY(calc(0.25 + var(--p) * 0.85));
+  transition: transform 0.15s;
+  animation: flicker 0.12s ease-in-out infinite alternate;
+}
+
+.go {
+  .rocket { animation: despegue 2.3s cubic-bezier(0.45, 0, 0.9, 0.55) forwards; }
+  .flame { transform: scaleY(2.3); transition: none; }
+  .puff { animation-play-state: running; }
+}
+
+// ---------- Humo de la plataforma ----------
+.humo { position: absolute; left: 50%; bottom: -6px; width: 0; z-index: 1; }
+.puff {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 46px;
+  height: 46px;
+  margin-left: -23px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.85), rgba(200, 210, 255, 0.25) 60%, transparent 70%);
+  opacity: 0;
+  animation: humo 1.8s ease-out calc(var(--i) * 0.12s) both paused;
+  --dir: calc((var(--i) - 7) * 22px);
+}
+.go .puff { animation-play-state: running; }
+
+// ---------- Panel inferior ----------
+.panel { z-index: 2; width: min(100%, 380px); min-height: 110px; }
+.medidor {
+  height: 14px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+.relleno {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #22d3ee, #facc15, #ef4444);
+  box-shadow: 0 0 14px rgba(250, 204, 21, 0.7);
+  transition: width 0.12s linear;
+}
+.etiqueta { display: block; margin-top: 6px; font-size: 0.8rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+.acciones { display: flex; justify-content: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+
+.done .launch { opacity: 0; }
+
+@keyframes rumble {
+  0%   { transform: translate(0, 0) rotate(0); }
+  25%  { transform: translate(calc(var(--p) * -4px), calc(var(--p) * 2px)) rotate(calc(var(--p) * -1.5deg)); }
+  50%  { transform: translate(calc(var(--p) * 4px), calc(var(--p) * -2px)) rotate(calc(var(--p) * 1.5deg)); }
+  75%  { transform: translate(calc(var(--p) * -3px), calc(var(--p) * -1px)) rotate(calc(var(--p) * -1deg)); }
+  100% { transform: translate(0, 0) rotate(0); }
+}
+@keyframes flicker { to { transform: scaleY(calc(0.35 + var(--p) * 1)) scaleX(0.9); } }
+@keyframes despegue {
+  0%   { transform: translateY(0) scale(1); }
+  12%  { transform: translateY(10px) scale(1); }
+  100% { transform: translateY(-125vh) scale(0.7); }
+}
+@keyframes humo {
+  0%   { opacity: 0; transform: translate(0, 0) scale(0.3); }
+  20%  { opacity: 0.9; }
+  100% { opacity: 0; transform: translate(var(--dir), -50px) scale(3.2); }
+}
+@keyframes pop { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rocket, .flame, .vibra { animation: none; }
+}

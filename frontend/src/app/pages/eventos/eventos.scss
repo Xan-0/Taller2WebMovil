@@ -115,3 +115,10 @@
 
 
 
+
+.scan-btn {
+  --mat-button-outlined-outline-color: color-mix(in srgb, var(--accent) 70%, transparent);
+  --mat-button-outlined-label-text-color: var(--text);
+  border-radius: 999px;
+  mat-icon { color: var(--accent); }
+}

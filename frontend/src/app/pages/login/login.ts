@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -8,6 +8,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { BiometricService, EstadoHuella } from '../../services/biometric.service';
+import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -20,16 +24,24 @@ import { CommonModule } from '@angular/common';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatDialogModule,
+    MatIconModule
   ],
   styleUrls: ['./login.scss'],
   templateUrl: './login.html',
 })
-export class Login {
+export class Login implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+  private bio = inject(BiometricService);
+
+  /** Estado del sensor de huella (solo aplica dentro de la APK) */
+  huella = signal<EstadoHuella>('web');
+  verificandoHuella = signal(false);
 
   isRegisterMode = signal<boolean>(false);
 
@@ -39,6 +51,70 @@ export class Login {
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(4)]]
   });
+
+  async ngOnInit() {
+    this.huella.set(await this.bio.estado());
+  }
+
+  /** Inicio de sesión con el sensor de huella */
+  async entrarConHuella() {
+    if (this.verificandoHuella()) return;
+    this.verificandoHuella.set(true);
+    try {
+      const cred = await this.bio.obtenerCredenciales();
+      this.authService.login(cred).subscribe({
+        next: () => {
+          this.verificandoHuella.set(false);
+          this.snackBar.open('¡Bienvenido de vuelta!', 'Cerrar', { duration: 3000 });
+          this.router.navigate(['/dashboard']);
+        },
+        error: async () => {
+          // La contraseña guardada ya no sirve (p. ej. se cambió): se desactiva la huella
+          this.verificandoHuella.set(false);
+          await this.bio.desactivar();
+          this.huella.set(await this.bio.estado());
+          this.snackBar.open('Tus datos cambiaron. Inicia sesión con tu contraseña y vuelve a activar la huella.', 'Cerrar', { duration: 6000 });
+        },
+      });
+    } catch (e: any) {
+      this.verificandoHuella.set(false);
+      const msg = this.bio.mensajeError(e);
+      if (this.bio.esCredencialInvalida(e)) {
+        await this.bio.desactivar();
+        this.huella.set(await this.bio.estado());
+      }
+      if (msg) this.snackBar.open(msg, 'Cerrar', { duration: 5000 });
+    }
+  }
+
+  /** Tras un inicio de sesión normal, ofrece activar la huella para la próxima vez */
+  private async ofrecerActivarHuella(email: string, password: string) {
+    if (this.huella() !== 'inactivo') return;
+    const acepta = await new Promise<boolean>((resolve) =>
+      this.dialog
+        .open(ConfirmDialog, {
+          data: {
+            titulo: 'Acceso con huella',
+            mensaje: '¿Quieres entrar la próxima vez usando tu huella dactilar? Tus datos se guardan cifrados en el almacén seguro del celular.',
+            confirmar: 'Activar',
+            cancelar: 'Ahora no',
+            icono: 'fingerprint',
+          },
+          autoFocus: false,
+        })
+        .afterClosed()
+        .subscribe((r) => resolve(!!r)),
+    );
+    if (!acepta) return;
+    try {
+      await this.bio.activar(email, password);
+      this.huella.set('listo');
+      this.snackBar.open('Acceso con huella activado', 'Cerrar', { duration: 3000 });
+    } catch (e: any) {
+      const msg = this.bio.mensajeError(e);
+      if (msg) this.snackBar.open(msg, 'Cerrar', { duration: 5000 });
+    }
+  }
 
   toggleMode() {
     this.isRegisterMode.update(value => !value);
@@ -74,8 +150,9 @@ export class Login {
       });
     } else {
       this.authService.login({ email, password }).subscribe({
-        next: () => {
+        next: async () => {
           this.snackBar.open('¡Inicio de sesión exitoso!', 'Cerrar', { duration: 3000 });
+          await this.ofrecerActivarHuella(email, password);
           this.router.navigate(['/dashboard']);
         },
         error: () => {
