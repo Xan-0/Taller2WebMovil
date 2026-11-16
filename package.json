@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@capacitor/android": "^7.6.10",
-    "@capacitor/core": "^7.6.10"
-  }
-}
