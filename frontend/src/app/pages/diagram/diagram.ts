@@ -53,3 +53,5 @@ export class Diagram {
     this.router.navigate(['/dashboard']);
   }
 }
+
+

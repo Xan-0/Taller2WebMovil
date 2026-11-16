@@ -18,3 +18,5 @@ export class UsuarioService {
     return this.http.put(`${this.apiUrl}/auth/perfil`, data);
   }
 }
+
+

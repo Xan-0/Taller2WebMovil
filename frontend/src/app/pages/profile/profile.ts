@@ -101,3 +101,5 @@ export class Profile implements OnInit {
     return this.tareas().filter(t => t.estado.toLowerCase() === 'completada').length;
   }
 }
+
+

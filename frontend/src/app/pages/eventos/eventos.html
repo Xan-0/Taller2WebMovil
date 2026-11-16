@@ -150,7 +150,7 @@
       } @else {
         <div class="evento-list">
           @for (ev of eventosResource.value(); track ev.id) {
-            <mat-card class="evento-item">
+            <mat-card class="evento-item" [attr.data-evento-id]="ev.id">
               <mat-card-content>
                 <div class="evento-head">
                   <span class="evento-id">ID {{ ev.id }}</span>
@@ -181,3 +181,6 @@
     </mat-card-content>
   </mat-card>
 </div>
+
+
+

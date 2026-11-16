@@ -2,49 +2,59 @@
   <span>Tablero Kanban</span>
   <span class="spacer"></span>
   <button mat-button routerLink="/dashboard">Dashboard</button>
+  <button mat-button routerLink="/calendar">Calendario</button>
   <button mat-button routerLink="/profile">Perfil</button>
 </mat-toolbar>
 
-<div class="kanban-container">
-  <div class="kanban-column">
-    <h3>Por Hacer</h3>
-    <div class="column-content">
-      @for (task of obtenerPorEstado('por hacer'); track task.id) {
-        <mat-card class="task-card">
-          <mat-card-content>
-            <h4>{{ task.titulo }}</h4>
-            <p>{{ task.descripcion }}</p>
-          </mat-card-content>
-        </mat-card>
-      }
-    </div>
-  </div>
+<p class="kanban-hint">
+  <mat-icon>swipe</mat-icon>
+  Arrastra las tarjetas entre columnas para cambiar su estado. Suéltalas en el agujero negro para eliminarlas.
+</p>
 
-  <div class="kanban-column">
-    <h3>En Progreso</h3>
-    <div class="column-content">
-      @for (task of obtenerPorEstado('en progreso'); track task.id) {
-        <mat-card class="task-card">
-          <mat-card-content>
-            <h4>{{ task.titulo }}</h4>
-            <p>{{ task.descripcion }}</p>
-          </mat-card-content>
-        </mat-card>
-      }
+<div class="kanban-container" cdkDropListGroup>
+  @for (col of columnas; track col.estado) {
+    <div class="kanban-column" [attr.data-estado]="col.estado">
+      <h3><mat-icon>{{ col.icono }}</mat-icon> {{ col.titulo }}
+        <span class="count">{{ obtenerPorEstado(col.estado).length }}</span>
+      </h3>
+      <div
+        class="column-content"
+        cdkDropList
+        [cdkDropListData]="col.estado"
+        (cdkDropListDropped)="soltar($event)"
+      >
+        @for (task of obtenerPorEstado(col.estado); track task.id; let i = $index) {
+          <mat-card
+            class="task-card"
+            cdkDrag
+            [cdkDragStartDelay]="{ touch: 180, mouse: 0 }"
+            [cdkDragData]="task"
+            [attr.data-task-id]="task.id"
+            [style.animation-delay]="(i * 60) + 'ms'"
+            [class.fx-complete]="fxState()[task.id] === 'complete'"
+            [class.fx-delete]="fxState()[task.id] === 'delete'"
+            (cdkDragStarted)="onDragStart($event)"
+            (cdkDragMoved)="onDragMoved($event)"
+            (cdkDragEnded)="onDragEnded($event)"
+          >
+            <mat-card-content>
+              <h4>{{ task.titulo }}</h4>
+              @if (task.descripcion) { <p>{{ task.descripcion }}</p> }
+              @if (task.prioridad) {
+                <span class="prio prio-{{ task.prioridad.toLowerCase() }}">{{ task.prioridad }}</span>
+              }
+            </mat-card-content>
+          </mat-card>
+        } @empty {
+          <p class="empty">Sin tareas aquí</p>
+        }
+      </div>
     </div>
-  </div>
+  }
+</div>
 
-  <div class="kanban-column">
-    <h3>Completada</h3>
-    <div class="column-content">
-      @for (task of obtenerPorEstado('completada'); track task.id) {
-        <mat-card class="task-card">
-          <mat-card-content>
-            <h4>{{ task.titulo }}</h4>
-            <p>{{ task.descripcion }}</p>
-          </mat-card-content>
-        </mat-card>
-      }
-    </div>
-  </div>
+<div #hole class="blackhole" [class.visible]="arrastrando()" [class.hot]="sobreAgujero()">
+  <div class="disk"></div>
+  <mat-icon>delete_forever</mat-icon>
+  <span>Agujero negro</span>
 </div>

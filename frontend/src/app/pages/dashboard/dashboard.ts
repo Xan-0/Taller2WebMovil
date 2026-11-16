@@ -20,9 +20,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { TareasService, Tarea, TareaCreate } from '../../services/tareas.service';
 import { AuthService } from '../../services/auth.service';
+import { FxService } from '../../services/fx.service';
+import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
 
 export type Orden = 'llegada' | 'fecha' | 'estado' | 'prioridad' | 'categoria';
 
@@ -51,6 +54,7 @@ const limiteDia: ValidatorFn = (group) => {
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatIconModule,
+    MatDialogModule,
     RouterLink,
   ],
   templateUrl: './dashboard.html',
@@ -62,6 +66,8 @@ export class Dashboard {
   private router = inject(Router);
   private fb = inject(FormBuilder);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+  private fx = inject(FxService);
 
   displayedColumns: string[] = [
     'titulo',
@@ -86,6 +92,11 @@ export class Dashboard {
   orden = signal<Orden>('llegada');
   editingTaskId = signal<number | null>(null);
   private refreshTrigger = signal<number>(0);
+
+  /** Efecto visual activo por tarea (id -> tipo). Lo leen las filas de la tabla. */
+  fxState = signal<Record<number, 'complete' | 'delete' | 'new'>>({});
+
+  trackById = (_: number, t: Tarea) => t.id;
 
   // Se recarga automáticamente cuando cambia refreshTrigger
   tareasResource = resource({
@@ -180,24 +191,69 @@ export class Dashboard {
     const currentId = this.editingTaskId();
 
     if (currentId !== null) {
+      const anterior = this.tareasResource.value()?.find((t) => t.id === currentId);
       this.tareasService.actualizarTarea(currentId, payload).subscribe({
         next: () => {
           this.snackBar.open('Tarea actualizada', 'Cerrar', { duration: 3000 });
           this.resetForm();
           this.refreshTrigger.update((n) => n + 1);
+          if (payload.estado === 'completada' && anterior?.estado !== 'completada') {
+            this.celebrar(currentId);
+          }
         },
         error: () => this.snackBar.open('Error al actualizar', 'Cerrar', { duration: 3000 }),
       });
     } else {
       this.tareasService.crearTarea(payload).subscribe({
-        next: () => {
+        next: (nueva) => {
           this.snackBar.open('Tarea creada con éxito', 'Cerrar', { duration: 3000 });
           this.resetForm();
           this.refreshTrigger.update((n) => n + 1);
+          this.marcarFx(nueva.id, 'new', 1200);
+          setTimeout(() => this.fx.burst(this.filaDe(nueva.id), 'create'), 450);
         },
         error: () => this.snackBar.open('Error al crear tarea', 'Cerrar', { duration: 3000 }),
       });
     }
+  }
+
+  // ---------- Efectos por tarea ----------
+  private marcarFx(id: number, tipo: 'complete' | 'delete' | 'new', ms: number) {
+    this.fxState.update((m) => ({ ...m, [id]: tipo }));
+    if (ms > 0) {
+      setTimeout(
+        () =>
+          this.fxState.update((m) => {
+            const { [id]: _, ...resto } = m;
+            return resto;
+          }),
+        ms,
+      );
+    }
+  }
+
+  private filaDe(id: number): Element | null {
+    return document.querySelector(`[data-task-id="${id}"]`);
+  }
+
+  /** Efecto de tarea completada: onda de energía + estrellas */
+  private celebrar(id: number) {
+    this.marcarFx(id, 'complete', 1400);
+    // espera a que la tabla se vuelva a dibujar con los datos nuevos
+    setTimeout(() => this.fx.burst(this.filaDe(id), 'complete'), 350);
+  }
+
+  /** Botón rápido "Completar" de cada fila */
+  completar(tarea: Tarea) {
+    if (tarea.estado === 'completada') return;
+    this.tareasService.actualizarTarea(tarea.id, { estado: 'completada' }).subscribe({
+      next: () => {
+        this.snackBar.open('¡Misión cumplida!', 'Cerrar', { duration: 2500 });
+        this.refreshTrigger.update((n) => n + 1);
+        this.celebrar(tarea.id);
+      },
+      error: () => this.snackBar.open('No se pudo completar la tarea', 'Cerrar', { duration: 3000 }),
+    });
   }
 
   cargarParaEditar(tarea: Tarea) {
@@ -219,16 +275,44 @@ export class Dashboard {
     this.resetForm();
   }
 
-  eliminarTarea(id: number) {
-    if (confirm('¿Estás seguro de eliminar esta tarea?')) {
-      this.tareasService.eliminarTarea(id).subscribe({
-        next: () => {
-          this.snackBar.open('Tarea eliminada', 'Cerrar', { duration: 3000 });
-          this.refreshTrigger.update((n) => n + 1);
+  eliminarTarea(tarea: Tarea) {
+    this.dialog
+      .open(ConfirmDialog, {
+        data: {
+          titulo: 'Eliminar tarea',
+          mensaje: `¿Enviar "${tarea.titulo}" al agujero negro? Esta acción no se puede deshacer.`,
+          confirmar: 'Eliminar',
+          peligro: true,
+          icono: 'delete_forever',
         },
-        error: () => this.snackBar.open('Error al eliminar', 'Cerrar', { duration: 3000 }),
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((ok) => {
+        if (!ok) return;
+        // 1) animación de desintegración  2) recién entonces se borra en el servidor
+        this.marcarFx(tarea.id, 'delete', 0);
+        this.fx.burst(this.filaDe(tarea.id), 'delete');
+        setTimeout(() => {
+          this.tareasService.eliminarTarea(tarea.id).subscribe({
+            next: () => {
+              this.snackBar.open('Tarea eliminada', 'Cerrar', { duration: 3000 });
+              this.refreshTrigger.update((n) => n + 1);
+              this.fxState.update((m) => {
+                const { [tarea.id]: _, ...resto } = m;
+                return resto;
+              });
+            },
+            error: () => {
+              this.fxState.update((m) => {
+                const { [tarea.id]: _, ...resto } = m;
+                return resto;
+              });
+              this.snackBar.open('Error al eliminar', 'Cerrar', { duration: 3000 });
+            },
+          });
+        }, 800);
       });
-    }
   }
 
   resetForm() {
@@ -250,3 +334,6 @@ export class Dashboard {
     this.router.navigate(['/login']);
   }
 }
+
+
+

@@ -15,8 +15,11 @@
 
     .section-title {
       margin: 32px 0 16px;
-      color: #283593;
-      border-bottom: 2px solid rgba(63, 81, 181, 0.15);
+      color: var(--text);
+      border-bottom: 1px solid var(--panel-border);
+      font-family: var(--font-display);
+      font-size: 1rem;
+      letter-spacing: 1px;
       padding-bottom: 8px;
     }
 
@@ -33,12 +36,14 @@
         padding: 18px 8px;
         border-radius: 16px;
         color: #fff;
-        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+        transition: transform 0.3s;
+        &:hover { transform: translateY(-4px) scale(1.04); }
 
-        .number { font-size: 1.7rem; font-weight: 700; }
+        .number { font-size: 1.7rem; font-weight: 700; font-family: var(--font-display); }
         .label { font-size: 0.8rem; margin-top: 4px; opacity: 0.95; }
 
-        &.total { background: linear-gradient(135deg, #5c6bc0, #3949ab); }
+        &.total { background: linear-gradient(135deg, #5c6bc0, var(--accent)); }
         &.todo { background: linear-gradient(135deg, #ffb300, #fb8c00); }
         &.progress { background: linear-gradient(135deg, #42a5f5, #1e88e5); }
         &.done { background: linear-gradient(135deg, #66bb6a, #2e7d32); }

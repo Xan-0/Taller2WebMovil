@@ -55,3 +55,6 @@ export class EventosService {
     return this.http.post<Asistencia>(`${this.apiUrl}/asistencia`, data);
   }
 }
+
+
+

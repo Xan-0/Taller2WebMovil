@@ -1,0 +1,161 @@
+// Fondo espacial (sin encapsulación: usa body[data-planet] para cambiar de planeta)
+
+app-space-background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: #03040d;
+  contain: strict;
+}
+
+// ---------- Nebulosas (colores animados por planeta) ----------
+.sp-nebula {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(ellipse 55% 45% at 22% 28%, var(--neb-1), transparent 70%),
+    radial-gradient(ellipse 50% 50% at 80% 75%, var(--neb-2), transparent 70%);
+  opacity: 0.85;
+  will-change: transform;
+  animation: sp-drift 38s ease-in-out infinite alternate;
+}
+
+.sp-nebula-2 {
+  background:
+    radial-gradient(ellipse 40% 35% at 70% 20%, var(--neb-2), transparent 70%),
+    radial-gradient(ellipse 45% 40% at 15% 85%, var(--neb-1), transparent 70%);
+  opacity: 0.55;
+  animation-duration: 52s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes sp-drift {
+  from { transform: translate3d(-3%, -2%, 0) scale(1); }
+  to   { transform: translate3d(4%, 3%, 0) scale(1.12); }
+}
+
+.sp-stars {
+  position: absolute;
+  inset: 0;
+}
+
+// ---------- Planeta ----------
+.sp-planet-pos {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50vmin;
+  height: 50vmin;
+  transform: translate3d(58vw, 52vh, 0) scale(1);
+  transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+  --ring-o: 0;
+}
+
+.sp-planet {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 30% 26%, rgba(255, 255, 255, 0.5), transparent 20%),
+    radial-gradient(circle at 34% 30%, var(--accent), var(--accent-2) 58%, #02030a 100%);
+  box-shadow:
+    inset -7vmin -5vmin 11vmin rgba(0, 0, 0, 0.7),
+    0 0 14vmin color-mix(in srgb, var(--accent) 38%, transparent);
+  will-change: transform;
+  animation: sp-float 16s ease-in-out infinite alternate;
+}
+
+.sp-surface {
+  position: absolute;
+  inset: 0;
+  right: -15vmin;
+  background: repeating-linear-gradient(
+    102deg,
+    rgba(255, 255, 255, 0.09) 0 2.4vmin,
+    transparent 2.4vmin 7.5vmin
+  );
+  background-size: 15vmin 100%;
+  will-change: transform;
+  animation: sp-spin 24s linear infinite;
+}
+
+// Solo transform (lo resuelve la GPU, sin repintar)
+@keyframes sp-spin { to { transform: translate3d(15vmin, 0, 0); } }
+@keyframes sp-float {
+  from { transform: translate3d(0, -1.2vmin, 0) rotate(-2deg); }
+  to   { transform: translate3d(0, 1.6vmin, 0) rotate(2deg); }
+}
+
+.sp-ring {
+  position: absolute;
+  inset: -10% -48%;
+  border-radius: 50%;
+  border: 2.6vmin solid color-mix(in srgb, var(--accent-2) 55%, transparent);
+  box-shadow: 0 0 5vmin color-mix(in srgb, var(--accent-2) 40%, transparent);
+  transform: rotateX(76deg) rotateZ(-16deg);
+  opacity: var(--ring-o);
+  transition: opacity 1.2s ease;
+}
+
+.sp-orbit {
+  position: absolute;
+  inset: -22%;
+  animation: sp-orbit 22s linear infinite;
+}
+
+.sp-moon {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 5.5vmin;
+  height: 5.5vmin;
+  margin-left: -2.75vmin;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, #fff, #9aa4c4 55%, #1a2038);
+  box-shadow: 0 0 3vmin rgba(255, 255, 255, 0.35);
+}
+
+@keyframes sp-orbit { to { transform: rotate(360deg); } }
+
+// Posición / tamaño / anillo por planeta
+body[data-planet='nova']    .sp-planet-pos { transform: translate3d(8vw, 42vh, 0) scale(1.15); }
+body[data-planet='terra']   .sp-planet-pos { transform: translate3d(62vw, 54vh, 0) scale(1); }
+body[data-planet='mars']    .sp-planet-pos { transform: translate3d(-12vw, 58vh, 0) scale(0.85); }
+body[data-planet='jupiter'] .sp-planet-pos { transform: translate3d(66vw, -14vh, 0) scale(1.35); }
+body[data-planet='neptuno'] .sp-planet-pos { transform: translate3d(-18vw, -12vh, 0) scale(1.05); }
+body[data-planet='saturno'] .sp-planet-pos { transform: translate3d(54vw, 48vh, 0) scale(1); --ring-o: 0.85; }
+body[data-planet='jupiter'] .sp-planet-pos { --ring-o: 0.25; }
+
+// ---------- Salto de hiperespacio ----------
+.sp-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in srgb, var(--accent) 55%, transparent) 0,
+    color-mix(in srgb, var(--accent-2) 22%, transparent) 22%,
+    transparent 55%
+  );
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.5s ease, transform 0.7s ease;
+}
+
+.sp-warp .sp-flash { opacity: 1; transform: scale(1.4); }
+.sp-warp .sp-planet-pos { opacity: 0.55; }
+.sp-planet-pos { transition: transform 1.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s;
+  will-change: transform; }
+
+.sp-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(2, 3, 10, 0.75) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sp-nebula, .sp-planet, .sp-surface, .sp-orbit { animation: none; }
+  .sp-planet-pos { transition: none; }
+}

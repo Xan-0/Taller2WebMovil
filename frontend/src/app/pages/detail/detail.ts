@@ -52,3 +52,5 @@ export class Detail {
     this.router.navigate(['/dashboard']);
   }
 }
+
+

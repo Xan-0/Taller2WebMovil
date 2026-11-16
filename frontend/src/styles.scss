@@ -1,148 +1,552 @@
 @use '@angular/material' as mat;
 
+// =====================================================================
+//  TEMA FUTURISTA / ESPACIAL
+//  - Material en modo oscuro con acentos que cambian según el "planeta" de la vista
+//  - Animaciones: entrada/salida de vistas, estrellas, efectos por tarea (.fx-*)
+// =====================================================================
+
 html {
   height: 100%;
+  color-scheme: dark;
   @include mat.theme(
     (
       color: (
-        primary: mat.$azure-palette,
+        theme-type: dark,
+        primary: mat.$cyan-palette,
         tertiary: mat.$violet-palette,
       ),
-      typography: Roboto,
+      typography: (
+        plain-family: unquote("'Exo 2', sans-serif"),
+        brand-family: unquote("Orbitron, 'Exo 2', sans-serif"),
+      ),
       density: 0,
     )
   );
 }
 
+// Colores registrados: permiten TRANSICIONES suaves al cambiar de planeta
+@property --accent   { syntax: '<color>'; inherits: true; initial-value: #a78bfa; }
+@property --accent-2 { syntax: '<color>'; inherits: true; initial-value: #22d3ee; }
+@property --neb-1    { syntax: '<color>'; inherits: true; initial-value: #4c1d95; }
+@property --neb-2    { syntax: '<color>'; inherits: true; initial-value: #0e7490; }
+
 :root {
-  // Zonas seguras (notch, barra de estado, barra de navegación de Android).
-  // env() lo entrega el WebView; --safe-area-inset-* lo inyecta Capacitor (SystemBars).
+  // Zonas seguras (notch, barra de estado, barra de navegación de Android)
   --sat: max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px));
   --sab: max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px));
   --sal: max(env(safe-area-inset-left, 0px), var(--safe-area-inset-left, 0px));
   --sar: max(env(safe-area-inset-right, 0px), var(--safe-area-inset-right, 0px));
-  --app-glass: rgba(255, 255, 255, 0.82);
-  --app-border: rgba(255, 255, 255, 0.9);
+
+  --font-display: 'Orbitron', 'Exo 2', sans-serif;
+  --text: #e8edff;
+  --muted: #9aa7cf;
+  --panel: rgba(11, 16, 42, 0.86);
+  --panel-solid: rgba(20, 27, 62, 0.72);
+  --panel-border: rgba(160, 180, 255, 0.16);
   --app-radius: 18px;
-  --app-shadow: 0 10px 30px rgba(63, 81, 181, 0.12), 0 2px 6px rgba(63, 81, 181, 0.06);
-  --app-gradient: linear-gradient(90deg, #3f51b5, #7c4dff);
 }
 
-// Fondo: planificador con cuadrícula suave, casillas de verificación (checklist)
-// y degradados claros.
+// Paleta por planeta (cada vista tiene el suyo)
+body {
+  --accent: #a78bfa;
+  --accent-2: #22d3ee;
+  --neb-1: #4c1d95;
+  --neb-2: #0e7490;
+  transition:
+    --accent 1.2s ease,
+    --accent-2 1.2s ease,
+    --neb-1 1.2s ease,
+    --neb-2 1.2s ease;
+}
+body[data-planet='nova']    { --accent: #a78bfa; --accent-2: #22d3ee; --neb-1: #4c1d95; --neb-2: #0e7490; }
+body[data-planet='terra']   { --accent: #22d3ee; --accent-2: #3b82f6; --neb-1: #0c4a6e; --neb-2: #1e3a8a; }
+body[data-planet='mars']    { --accent: #fb923c; --accent-2: #ef4444; --neb-1: #7c2d12; --neb-2: #7f1d1d; }
+body[data-planet='jupiter'] { --accent: #facc15; --accent-2: #d97706; --neb-1: #713f12; --neb-2: #831843; }
+body[data-planet='neptuno'] { --accent: #2dd4bf; --accent-2: #6366f1; --neb-1: #134e4a; --neb-2: #312e81; }
+body[data-planet='saturno'] { --accent: #f0abfc; --accent-2: #fbbf24; --neb-1: #701a75; --neb-2: #78350f; }
+
 *, *::before, *::after { box-sizing: border-box; }
 
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 body {
-  color-scheme: light;
   margin: 0;
   min-height: 100%;
   max-width: 100vw;
   overflow-x: hidden;
   padding: 0 var(--sar) var(--sab) var(--sal);
-  color: var(--mat-sys-on-surface);
+  color: var(--text);
   font: var(--mat-sys-body-medium);
-  background-color: #eef2ff;
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cpath d='M120 0H0v120' fill='none' stroke='%233f51b5' stroke-opacity='.07'/%3E%3Crect x='22' y='22' width='16' height='16' rx='4' fill='none' stroke='%233f51b5' stroke-opacity='.14' stroke-width='1.5'/%3E%3Cpath d='M26 30l4 4 7-8' fill='none' stroke='%233f51b5' stroke-opacity='.22' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M48 30h42' stroke='%233f51b5' stroke-opacity='.10' stroke-width='2' stroke-linecap='round'/%3E%3Crect x='22' y='72' width='16' height='16' rx='4' fill='none' stroke='%237c4dff' stroke-opacity='.14' stroke-width='1.5'/%3E%3Cpath d='M48 80h28' stroke='%237c4dff' stroke-opacity='.10' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"),
-    radial-gradient(circle at 12% 8%, rgba(124, 77, 255, 0.18), transparent 45%),
-    radial-gradient(circle at 90% 90%, rgba(63, 81, 181, 0.18), transparent 45%),
-    linear-gradient(135deg, #f4f7ff 0%, #ece9ff 100%);
-  background-attachment: fixed;
+  font-family: 'Exo 2', sans-serif;
+  background: #03040d;
+
+  // Material usa el acento del planeta
+  --mat-sys-primary: var(--accent);
+  --mat-sys-on-primary: #050714;
+  --mat-sys-secondary: var(--accent-2);
+  --mat-sys-tertiary: var(--accent-2);
+  --mat-sys-surface-tint: var(--accent);
 }
 
-// ---------- Barra de navegación ----------
+::selection { background: color-mix(in srgb, var(--accent) 45%, transparent); }
+
+// Barras de scroll discretas
+* { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--accent) 50%, transparent) transparent; }
+
+// ---------------------------------------------------------------------
+//  Contenedor de vistas: animación de entrada / salida (hiperespacio)
+// ---------------------------------------------------------------------
+.page-shell {
+  position: relative;
+  min-height: 100vh;
+  overflow-x: clip;
+
+  > :not(router-outlet) {
+    display: block;
+    animation: page-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  > .page-leave {
+    animation: page-out 0.48s cubic-bezier(0.5, 0, 0.9, 0.5) both !important;
+    pointer-events: none;
+  }
+}
+
+@keyframes page-in {
+  from { opacity: 0; transform: scale(0.82); filter: blur(10px) brightness(2.2); }
+  60%  { filter: blur(0) brightness(1.15); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+
+@keyframes page-out {
+  to { opacity: 0; transform: scale(1.22); filter: blur(12px) brightness(2.4); }
+}
+
+// Los bloques de cada vista aparecen escalonados
+$page-containers: '.login-container, .dashboard-container, .eventos-container, .profile-container, .kanban-container, .calendar-container, .detail-container';
+#{$page-containers} {
+  > * { animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  @for $i from 1 through 8 {
+    > *:nth-child(#{$i}) { animation-delay: #{0.12 + $i * 0.08}s; }
+  }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(26px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+// ---------------------------------------------------------------------
+//  Barra de navegación
+// ---------------------------------------------------------------------
 .mat-toolbar {
   --mat-toolbar-container-background-color: transparent;
-  --mat-toolbar-container-text-color: #fff;
-  background: var(--app-gradient) !important;
-  color: #fff;
-  box-shadow: 0 4px 18px rgba(63, 81, 181, 0.35);
+  --mat-toolbar-container-text-color: var(--text);
+  background: rgba(6, 9, 26, 0.92) !important;
+  color: var(--text);
+  border-bottom: 1px solid var(--panel-border);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  font-family: var(--font-display);
   font-weight: 500;
-  letter-spacing: 0.3px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  font-size: 0.95rem;
   position: sticky;
   top: 0;
   z-index: 10;
   padding-top: var(--sat);
 
+  // Línea de energía bajo la barra
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--accent-2), transparent);
+  }
+
   .mat-mdc-button {
-    --mat-button-text-label-text-color: #fff;
+    --mat-button-text-label-text-color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    letter-spacing: 0.6px;
     border-radius: 999px;
-    opacity: 0.92;
-    transition: background 0.2s, opacity 0.2s;
+    opacity: 0.88;
+    transition: background 0.25s, opacity 0.25s, box-shadow 0.25s, transform 0.25s;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.18);
+      background: color-mix(in srgb, var(--accent) 16%, transparent);
+      box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 40%, transparent);
       opacity: 1;
+      transform: translateY(-1px);
     }
   }
 }
 
-// ---------- Tarjetas de vidrio ----------
+
+// ---------------------------------------------------------------------
+//  Tarjetas de vidrio con brillo
+// ---------------------------------------------------------------------
 .mat-mdc-card {
-  --mat-card-elevated-container-color: var(--app-glass);
+  --mat-card-elevated-container-color: var(--panel);
   --mat-card-elevated-container-shape: var(--app-radius);
-  border: 1px solid var(--app-border);
-  box-shadow: var(--app-shadow);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  --mat-card-title-text-color: var(--text);
+  --mat-card-subtitle-text-color: var(--muted);
+  color: var(--text);
+  border: 1px solid var(--panel-border);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: box-shadow 0.4s, border-color 0.4s, transform 0.4s;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    box-shadow:
+      0 14px 46px rgba(0, 0, 0, 0.5),
+      0 0 28px color-mix(in srgb, var(--accent) 28%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
 }
 
 .mat-mdc-card-title {
-  font-weight: 600;
-  color: #283593;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: var(--text);
+  text-shadow: 0 0 14px color-mix(in srgb, var(--accent) 60%, transparent);
 }
 
-// ---------- Botones ----------
+// ---------------------------------------------------------------------
+//  Botones
+// ---------------------------------------------------------------------
 .mat-mdc-raised-button,
 .mat-mdc-unelevated-button {
+  --mat-button-protected-container-color: transparent;
+  --mat-button-protected-label-text-color: #050714;
+  --mat-button-filled-container-color: transparent;
+  --mat-button-filled-label-text-color: #050714;
   border-radius: 999px !important;
   padding-inline: 22px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background-image: linear-gradient(120deg, var(--accent), var(--accent-2)) !important;
+  background-size: 160% 100%;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 35%, transparent);
+  transition: background-position 0.5s, box-shadow 0.3s, transform 0.2s, filter 0.3s;
+
+  &:hover:not([disabled]) {
+    background-position: 100% 0;
+    box-shadow: 0 0 30px color-mix(in srgb, var(--accent) 65%, transparent);
+    transform: translateY(-1px);
+  }
+  &:active:not([disabled]) { transform: scale(0.97); }
+  &[disabled] {
+    background-image: none !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    --mat-button-protected-disabled-container-color: rgba(255, 255, 255, 0.1);
+    --mat-button-protected-disabled-label-text-color: var(--muted);
+    --mat-button-filled-disabled-container-color: rgba(255, 255, 255, 0.1);
+    --mat-button-filled-disabled-label-text-color: var(--muted);
+    color: var(--muted);
+    box-shadow: none;
+  }
+
+  &.mat-warn {
+    --mat-button-protected-label-text-color: #fff;
+    --mat-button-filled-label-text-color: #fff;
+    background-image: linear-gradient(120deg, #f43f5e, #a855f7) !important;
+    box-shadow: 0 0 18px rgba(244, 63, 94, 0.4);
+  }
 }
 
-// ---------- Etiquetas de estado (compartidas) ----------
+.mat-mdc-icon-button { transition: transform 0.2s, box-shadow 0.3s, background 0.3s; }
+.mat-mdc-icon-button:hover:not([disabled]) {
+  transform: scale(1.12);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+// ---------------------------------------------------------------------
+//  Etiquetas de estado
+// ---------------------------------------------------------------------
 .badge {
+  position: relative;
   display: inline-block;
-  padding: 4px 12px;
+  padding: 4px 14px;
   border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  text-transform: capitalize;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
 
   &.por-hacer {
-    background: #fff1cc;
-    color: #8a5a00;
+    background: rgba(250, 204, 21, 0.12);
+    color: #fde047;
+    border-color: rgba(250, 204, 21, 0.4);
+
+    // punto que late (solo transform/opacity: barato)
+    &::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #facc15;
+      animation: dot-pulse 1.8s ease-in-out infinite;
+    }
   }
+  // Mini spinner circular = "en progreso" (antes era un anillo que se veía como una raya)
   &.en-progreso {
-    background: #d6ecff;
-    color: #0b4f8a;
+    background: rgba(56, 189, 248, 0.12);
+    color: #7dd3fc;
+    border-color: rgba(56, 189, 248, 0.35);
+
+    &::before {
+      content: '';
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 2px solid rgba(56, 189, 248, 0.3);
+      border-top-color: #38bdf8;
+      animation: spin 0.9s linear infinite;
+    }
   }
   &.completada {
-    background: #d9f5df;
-    color: #1b6b32;
+    background: rgba(52, 211, 153, 0.14);
+    color: #6ee7b7;
+    border-color: rgba(52, 211, 153, 0.45);
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
+
+    &::before { content: '✓'; font-weight: 900; }
   }
 }
 
-// ---------- Tablas ----------
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes dot-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.55); opacity: 0.45; }
+}
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.35); }
+  50%      { box-shadow: 0 0 0 7px rgba(250, 204, 21, 0); }
+}
+
+// ---------------------------------------------------------------------
+//  Tablas
+// ---------------------------------------------------------------------
 .mat-mdc-table {
   background: transparent;
   --mat-table-background-color: transparent;
+  --mat-table-row-item-label-text-color: var(--text);
+  --mat-table-header-headline-color: var(--accent);
+  --mat-table-row-item-outline-color: var(--panel-border);
 
   .mat-mdc-header-cell {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
     font-weight: 600;
-    color: #3949ab;
-    background: rgba(63, 81, 181, 0.07);
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
   }
 
-  .mat-mdc-row:hover {
-    background: rgba(124, 77, 255, 0.06);
+  .mat-mdc-row { transition: background 0.25s; }
+  .mat-mdc-row:hover { background: color-mix(in srgb, var(--accent) 9%, transparent); }
+}
+
+// ---------------------------------------------------------------------
+//  Formularios y diálogos
+// ---------------------------------------------------------------------
+.mat-mdc-form-field {
+  --mat-form-field-container-text-color: var(--text);
+  --mat-form-field-outlined-outline-color: rgba(160, 180, 255, 0.25);
+  --mat-form-field-outlined-hover-outline-color: color-mix(in srgb, var(--accent) 70%, transparent);
+  --mat-form-field-outlined-focus-outline-color: var(--accent);
+  --mat-form-field-outlined-focus-label-text-color: var(--accent);
+  --mat-form-field-outlined-label-text-color: var(--muted);
+}
+
+.mat-mdc-dialog-container {
+  --mat-dialog-container-color: rgba(9, 13, 36, 0.94);
+  --mat-dialog-container-shape: 22px;
+  --mat-dialog-subhead-color: var(--text);
+  --mat-dialog-supporting-text-color: var(--muted);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  box-shadow: 0 0 60px color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: 22px;
+  animation: dialog-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes dialog-in {
+  from { opacity: 0; transform: scale(0.8) translateY(30px); filter: blur(6px); }
+  to   { opacity: 1; transform: none; filter: none; }
+}
+.cdk-overlay-dark-backdrop { background: rgba(2, 3, 12, 0.78); }
+
+.mat-mdc-snack-bar-container {
+  --mat-snack-bar-container-color: rgba(10, 15, 40, 0.95);
+  --mat-snack-bar-supporting-text-color: var(--text);
+  --mat-snack-bar-button-color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 14px;
+  box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+// ---------------------------------------------------------------------
+//  EFECTOS POR TAREA
+// ---------------------------------------------------------------------
+
+// Capa de partículas (creada por FxService)
+.fx-layer {
+  position: fixed;
+  width: 0;
+  height: 0;
+  z-index: 3000;
+  pointer-events: none;
+}
+
+.fx-p {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--s);
+  height: var(--s);
+  margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+  background: var(--c);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--c), 0 0 22px var(--c);
+  opacity: 0;
+
+  &.fx-star {
+    border-radius: 0;
+    clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+    width: calc(var(--s) * 2);
+    height: calc(var(--s) * 2);
+    margin: calc(var(--s) * -1) 0 0 calc(var(--s) * -1);
   }
 }
 
-// ---------- Responsive ----------
-// Barra de navegación: en pantallas medianas/pequeñas el título ocupa su propia
-// fila y los botones se reparten debajo (antes se desbordaban fuera de pantalla).
+// Completar: las partículas salen disparadas
+.fx-complete .fx-p { animation: fx-out 1.1s cubic-bezier(0.2, 0.8, 0.3, 1) var(--d) both; }
+.fx-create .fx-p   { animation: fx-out 0.9s cubic-bezier(0.2, 0.8, 0.3, 1) var(--d) both; }
+@keyframes fx-out {
+  0%   { opacity: 1; transform: translate(0, 0) scale(0.4) rotate(0); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.2) rotate(var(--r)); }
+}
+
+// Eliminar: son succionadas por un agujero negro
+.fx-delete .fx-p { animation: fx-suck 0.95s cubic-bezier(0.55, 0, 0.9, 0.4) var(--d) both; }
+@keyframes fx-suck {
+  0%   { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.2) rotate(0); }
+  20%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(0, 0) scale(0) rotate(var(--r)); }
+}
+
+.fx-ring {
+  position: absolute;
+  left: -40px;
+  top: -40px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid #34d399;
+  box-shadow: 0 0 22px #34d399, inset 0 0 22px #34d399;
+  animation: fx-ring 0.9s ease-out both;
+}
+.fx-create .fx-ring { border-color: #22d3ee; box-shadow: 0 0 22px #22d3ee, inset 0 0 22px #22d3ee; }
+@keyframes fx-ring {
+  from { opacity: 1; transform: scale(0.2); }
+  to   { opacity: 0; transform: scale(5); }
+}
+
+.fx-hole {
+  position: absolute;
+  left: -45px;
+  top: -45px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #000 0 38%, #3b0764 55%, rgba(168, 85, 247, 0.55) 68%, transparent 72%);
+  box-shadow: 0 0 40px #a855f7, 0 0 80px rgba(244, 63, 94, 0.5);
+  animation: fx-hole 1.1s ease-in-out both;
+}
+@keyframes fx-hole {
+  0%   { opacity: 0; transform: scale(0) rotate(0); }
+  35%  { opacity: 1; transform: scale(1.5) rotate(180deg); }
+  100% { opacity: 0; transform: scale(0) rotate(540deg); }
+}
+
+// Fila / tarjeta de una tarea completada: destello verde + barrido de energía
+.mat-mdc-row.fx-complete {
+  animation: row-flash 1.3s ease-out both !important;
+}
+@keyframes row-flash {
+  0%   { background-color: transparent; }
+  30%  { background-color: rgba(52, 211, 153, 0.30); }
+  100% { background-color: transparent; }
+}
+.task-card.fx-complete {
+  animation: row-complete 1.3s ease-out backwards !important;
+  background-image: linear-gradient(100deg, transparent 30%, rgba(52, 211, 153, 0.45) 50%, transparent 70%);
+  background-repeat: no-repeat;
+  background-size: 250% 100%;
+}
+@keyframes row-complete {
+  0%   { background-position: 130% 0; box-shadow: 0 0 0 rgba(52, 211, 153, 0); transform: scale(1); }
+  35%  { transform: scale(1.03); box-shadow: 0 0 36px rgba(52, 211, 153, 0.7); }
+  100% { background-position: -130% 0; box-shadow: 0 0 0 rgba(52, 211, 153, 0); transform: scale(1); }
+}
+
+// Eliminar: se sacude, se tiñe de rojo y se desintegra hacia el agujero
+.mat-mdc-row.fx-delete,
+.task-card.fx-delete {
+  animation: row-delete 0.8s cubic-bezier(0.55, 0, 0.9, 0.4) both !important;
+  pointer-events: none;
+}
+@keyframes row-delete {
+  0%   { transform: translateX(0); }
+  10%  { transform: translateX(-8px) rotate(-1deg); background: rgba(244, 63, 94, 0.25); }
+  20%  { transform: translateX(8px) rotate(1deg); }
+  30%  { transform: translateX(-6px); box-shadow: 0 0 30px rgba(244, 63, 94, 0.7); }
+  100% { opacity: 0; transform: scale(0.04) rotate(-20deg); filter: blur(8px) hue-rotate(80deg) brightness(1.8); }
+}
+
+// Nueva tarea: aterriza desde el espacio
+.mat-mdc-row.fx-new,
+.task-card.fx-new {
+  animation: row-new 0.9s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+}
+@keyframes row-new {
+  0%   { opacity: 0; transform: translateX(-60px) scale(0.9); filter: brightness(2.5) blur(4px); }
+  60%  { box-shadow: 0 0 34px color-mix(in srgb, var(--accent) 70%, transparent); }
+  100% { opacity: 1; transform: none; filter: none; box-shadow: none; }
+}
+
+// Arrastrar tarjetas (Kanban)
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 16px;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.65), 0 0 34px var(--accent) !important;
+  transform: rotate(3deg) scale(1.04);
+  z-index: 4000 !important;
+}
+.cdk-drag-placeholder {
+  opacity: 0.35;
+  border: 1px dashed var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent) !important;
+}
+.cdk-drag-animating { transition: transform 280ms cubic-bezier(0, 0, 0.2, 1); }
+
+// ---------------------------------------------------------------------
+//  Responsive
+// ---------------------------------------------------------------------
 @media (max-width: 960px) {
   .mat-toolbar.mat-toolbar-single-row {
     height: auto;
@@ -150,10 +554,11 @@ body {
     flex-wrap: wrap;
     padding: calc(var(--sat) + 8px) 12px 8px;
     gap: 2px 4px;
+    font-size: 0.85rem;
 
     > span:first-child {
       flex: 1 0 100%;
-      font-size: 1.05rem;
+      font-size: 0.95rem;
     }
 
     .spacer { display: none; }
@@ -162,23 +567,29 @@ body {
     .mat-mdc-raised-button {
       min-width: 0;
       padding: 0 10px;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       height: 34px;
     }
   }
 }
 
 @media (max-width: 720px) {
-  // El fondo fijo se ve cortado / lento en WebView móvil
-  body { background-attachment: scroll; }
-
+  .table-card table.mat-mdc-table {
+    thead { display: none; }
+    tbody { display: block; }
+  }
   .mat-mdc-card { --mat-card-elevated-container-shape: 14px; }
-
   .mat-mdc-card-header { flex-wrap: wrap; }
-  .mat-mdc-card-title { font-size: 1.1rem; }
-
-  // Evita que los campos se salgan de la pantalla
+  .mat-mdc-card-title { font-size: 1rem; }
   .mat-mdc-form-field { max-width: 100%; }
-
   .mat-mdc-snack-bar-container { margin-bottom: calc(var(--sab) + 8px) !important; }
+}
+
+// Menos movimiento si el sistema lo pide
+@media (prefers-reduced-motion: reduce) {
+  .page-shell > :not(router-outlet),
+  .login-container > *, .dashboard-container > *, .eventos-container > *,
+  .profile-container > *, .kanban-container > *, .calendar-container > *, .detail-container > *,
+  .mat-mdc-row,
+  .badge::before { animation: none !important; }
 }

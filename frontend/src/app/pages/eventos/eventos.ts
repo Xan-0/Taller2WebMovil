@@ -14,9 +14,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { EventosService, Evento, EventoCreate } from '../../services/eventos.service';
 import { AuthService } from '../../services/auth.service';
+import { FxService } from '../../services/fx.service';
+import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
 
 interface QrActivo {
   id: number;
@@ -39,6 +42,7 @@ interface QrActivo {
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatIconModule,
+    MatDialogModule,
   ],
   templateUrl: './eventos.html',
   styleUrls: ['./eventos.scss'],
@@ -48,6 +52,8 @@ export class Eventos {
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
+  private fx = inject(FxService);
 
   /** true solo dentro de la APK (Capacitor); en el navegador no se muestra el botón de QR */
   readonly esNativa = Capacitor.isNativePlatform();
@@ -151,15 +157,30 @@ export class Eventos {
   }
 
   eliminarEvento(ev: Evento) {
-    if (!confirm(`¿Eliminar el evento "${ev.nombre}"?`)) return;
-    this.eventosService.eliminarEvento(ev.id).subscribe({
-      next: () => {
-        if (this.qrActivo()?.id === ev.id) this.qrActivo.set(null);
-        this.snackBar.open('Evento eliminado', 'Cerrar', { duration: 3000 });
-        this.refresh.update((n) => n + 1);
-      },
-      error: (err) => this.mostrarError(err, 'No se pudo eliminar el evento'),
-    });
+    this.dialog
+      .open(ConfirmDialog, {
+        data: {
+          titulo: 'Eliminar evento',
+          mensaje: `¿Eliminar el evento "${ev.nombre}"? Se borrarán también sus asistencias.`,
+          confirmar: 'Eliminar',
+          peligro: true,
+          icono: 'delete_forever',
+        },
+        autoFocus: false,
+      })
+      .afterClosed()
+      .subscribe((ok) => {
+        if (!ok) return;
+        this.fx.burst(document.querySelector(`[data-evento-id="${ev.id}"]`), 'delete');
+        this.eventosService.eliminarEvento(ev.id).subscribe({
+          next: () => {
+            if (this.qrActivo()?.id === ev.id) this.qrActivo.set(null);
+            this.snackBar.open('Evento eliminado', 'Cerrar', { duration: 3000 });
+            this.refresh.update((n) => n + 1);
+          },
+          error: (err) => this.mostrarError(err, 'No se pudo eliminar el evento'),
+        });
+      });
   }
 
   // ---------- Confirmar visita ----------
@@ -186,6 +207,7 @@ export class Eventos {
         next: () => {
           this.confirmando.set(false);
           this.snackBar.open('¡Visita confirmada!', 'Cerrar', { duration: 4000 });
+          this.fx.burst(document.querySelector(`[data-evento-id="${idEvento}"]`), 'complete');
           this.confirmarForm.reset();
           this.refresh.update((n) => n + 1);
         },
@@ -248,3 +270,6 @@ export class Eventos {
     this.snackBar.open(detalle, 'Cerrar', { duration: 5000 });
   }
 }
+
+
+

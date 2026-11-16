@@ -19,13 +19,13 @@
   flex-direction: column;
   gap: 4px;
   p { margin: 6px 0; }
-  strong { color: #3949ab; }
+  strong { color: var(--accent); }
 }
 
 .msg {
   text-align: center;
   font-size: 1.1rem;
-  color: #667;
+  color: var(--muted);
   margin-top: 40px;
 }
 
