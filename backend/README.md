@@ -1,12 +1,12 @@
 Información sobre inicialización de la base de datos en *database/database.py*
 
-# Pasos para hacer debug del back-end
+# Pasos para ejecutar localmente el back-end
 
-## Parte para ejecutar
+## Ejecución local
 
 (Después de crear las variables de entorno requeridas en un archivo 'backend/.env', de acuerdo con backend/config.py)
 
-En anaconda prompt o similar, desde la carpeta raíz ejecutar:
+En anaconda prompt o similar, desde la carpeta backend/ ejecutar:
 ```shell
 (base) conda env create -f environment.yml
 (base) conda activate taller2WM-backend
@@ -20,7 +20,7 @@ Deberías ver en la consola mensajes indicando que la aplicación arrancó exito
 
 ****
 
-## Pasos extra de Debug
+## Debug
 
 ### Comprobar el funcionamiento con Swagger UI (Documentación Interactiva)
 
@@ -91,13 +91,13 @@ Verás todos los endpoints agrupados por categorías (Autenticación y Tareas).
 }
 ```
 
-<br>
+<br><br>
 
 ****
 
 <br>
 
-Para configurar una tarea de ejecución en VS Code (.vscode/launch.json) y hacer debug con breakpoints:
+### Para configurar una tarea de ejecución en VS Code (.vscode/launch.json) y hacer debug con breakpoints:
 
 ```json
 {

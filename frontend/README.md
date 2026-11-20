@@ -1,4 +1,4 @@
-# Taller 2 – Gestor de Tareas
+# Taller 2 – Gestor de Tareas y Eventos
 
 Angular + Angular Material (frontend) · FastAPI + SQLAlchemy (backend) · PostgreSQL.
 
@@ -17,7 +17,7 @@ createdb -U postgres taller2_WM_db
 ## 2. Configuración de environment (`.env`)
 El backend lee su configuración desde un archivo `.env` en la raíz del proyecto. **No se sube al repositorio** (está en `.gitignore`).
 
-1. Copiar la plantilla:
+1. Copiar la plantilla desde la raíz del proyecto:
    - Windows: `copy .env.example .env`
    - Linux/Mac: `cp .env.example .env`
 2. Generar una clave secreta:
@@ -32,7 +32,7 @@ El backend lee su configuración desde un archivo `.env` en la raíz del proyect
 
 > Para probar rápido sin PostgreSQL: `DATABASE_URL=sqlite:///./taller.db`
 
-## 3. Backend
+## 3. Backend (Si se quiere ejecutar de forma local)
 
 ```bash
 conda env create -f environment.yml
@@ -46,7 +46,7 @@ API: http://localhost:8000 · Documentación: http://localhost:8000/docs
 ## 4. Frontend
 En otra terminal:
 
-(cambiar url de la API en environments/environment.prod.ts para que apunte a la url local del backend)
+En caso de ejecutarse de forma local se debe cambiar url de la API en frontend/environments/environment.prod.ts para que apunte al puerto del backend
 
 ```bash
 cd frontend
@@ -58,4 +58,4 @@ Abrir http://localhost:4200, registrar un usuario e iniciar sesión.
 
 ## Problemas comunes
 - **`Field required` para `database_url` / `secret_key`:** falta el archivo `.env` o está mal nombrado (en Windows verifica que no sea `.env.txt`).
-- **El frontend no carga datos:** el backend debe estar corriendo en el puerto 8000.
+- **El frontend no carga datos:** el backend debe estar corriendo en el puerto 8000 o la url del deploy web debe ser correcta.
