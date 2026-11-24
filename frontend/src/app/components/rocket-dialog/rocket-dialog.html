@@ -5,14 +5,23 @@
       @case ('esperando') {
         <h2>¡Misión cumplida!</h2>
         <p class="tarea">{{ data.titulo }}</p>
-        @if (sinSensor()) {
-          <p class="aviso">
-            <mat-icon>sensors_off</mat-icon>
-            Este dispositivo no tiene acelerómetro. Toca el botón para lanzar el cohete.
-          </p>
-        } @else {
-          <p class="instruccion"><mat-icon class="vibra">vibration</mat-icon> ¡Agita el celular para lanzar el cohete!</p>
-        }
+        <div class="guia" role="note">
+          <h3><mat-icon>checklist</mat-icon> ¿Qué debes hacer?</h3>
+          @if (sinSensor()) {
+            <p class="aviso"><mat-icon>sensors_off</mat-icon> Tu dispositivo no tiene acelerómetro.</p>
+            <ol>
+              <li>Toca el botón <b>Lanzar cohete</b>.</li>
+              <li>Mira el despegue.</li>
+              <li>La tarea ya quedó completada.</li>
+            </ol>
+          } @else {
+            <ol>
+              <li>Sostén el celular con firmeza.</li>
+              <li><mat-icon class="vibra">vibration</mat-icon> <b>Agítalo</b> de lado a lado.</li>
+              <li>Cuando <b>Propulsores</b> llegue al 100 % el cohete despega.</li>
+            </ol>
+          }
+        </div>
       }
       @case ('despegando') { <h2>¡Despegando!</h2> }
       @case ('listo') { <h2>¡Tarea completada!</h2><p class="tarea">{{ data.titulo }}</p> }

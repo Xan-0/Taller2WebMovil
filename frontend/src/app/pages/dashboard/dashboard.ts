@@ -186,7 +186,8 @@ export class Dashboard {
       fecha: v.fecha,
       inicio_minutos: this.horaAMinutos(v.hora),
       duracion_minutos: Number(v.duracion_minutos),
-      estado: v.estado,
+      // Una tarea nueva nunca nace completada
+      estado: this.editingTaskId() === null && v.estado === 'completada' ? 'por hacer' : v.estado,
       prioridad: v.prioridad,
       categoria: v.categoria,
     };
@@ -244,7 +245,7 @@ export class Dashboard {
     // espera a que la tabla se vuelva a dibujar con los datos nuevos
     setTimeout(() => this.fx.burst(this.filaDe(id), 'complete'), 350);
     // luego aparece el cohete (se lanza agitando el celular)
-    setTimeout(() => this.rocket.lanzar(titulo), 1100);
+    this.rocket.lanzarConAviso(titulo, 1100);
   }
 
   /** Botón rápido "Completar" de cada fila */
@@ -252,7 +253,6 @@ export class Dashboard {
     if (tarea.estado === 'completada') return;
     this.tareasService.actualizarTarea(tarea.id, { estado: 'completada' }).subscribe({
       next: () => {
-        this.snackBar.open('¡Misión cumplida!', 'Cerrar', { duration: 2500 });
         this.refreshTrigger.update((n) => n + 1);
         this.celebrar(tarea.id, tarea.titulo);
       },

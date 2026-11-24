@@ -64,7 +64,9 @@ export class SpaceBackground implements AfterViewInit, OnDestroy {
   private raf = 0;
   private last = 0;
   private tint = '#22d3ee';
-  private tintAt = 0;
+  private planetaActual = '';
+  private costo = 0; // coste medio de dibujar un cuadro (ms)
+  private muestras = 0;
   private px = 0; // paralaje suavizado
   private py = 0;
   private tx = 0; // paralaje objetivo
@@ -83,24 +85,35 @@ export class SpaceBackground implements AfterViewInit, OnDestroy {
     this.ctx = canvas.getContext('2d')!;
     this.resize();
 
-    window.addEventListener('resize', this.onResize);
-
     if (this.space.reduced) {
+      window.addEventListener('resize', this.onResize);
       // Sin movimiento: se dibuja un cielo estático una sola vez
       this.draw(0);
       return;
     }
 
-    window.addEventListener('pointermove', this.onPointer, { passive: true });
-    // El bucle de animación corre fuera de Angular para no disparar detección de cambios
+    // Todo (listeners y bucle) corre fuera de Angular: no dispara detección de cambios
     this.zone.runOutsideAngular(() => {
+      window.addEventListener('resize', this.onResize, { passive: true });
+      window.addEventListener('pointermove', this.onPointer, { passive: true });
+      document.addEventListener('visibilitychange', this.onVisibility);
       this.last = performance.now();
       this.raf = requestAnimationFrame(this.loop);
     });
   }
 
+  // Con la app en segundo plano / pantalla apagada no se dibuja nada
+  private onVisibility = () => {
+    cancelAnimationFrame(this.raf);
+    if (!document.hidden) {
+      this.last = performance.now();
+      this.raf = requestAnimationFrame(this.loop);
+    }
+  };
+
   ngOnDestroy() {
     cancelAnimationFrame(this.raf);
+    document.removeEventListener('visibilitychange', this.onVisibility);
     window.removeEventListener('resize', this.onResize);
     window.removeEventListener('pointermove', this.onPointer);
   }
@@ -115,9 +128,18 @@ export class SpaceBackground implements AfterViewInit, OnDestroy {
     canvas.style.width = `${this.w}px`;
     canvas.style.height = `${this.h}px`;
 
-    const count = this.w < 720 ? 80 : 170;
+    const lowEnd = (navigator.hardwareConcurrency || 4) <= 4;
+    const count = this.w < 720 ? (lowEnd ? 50 : 70) : lowEnd ? 110 : 160;
     this.stars = Array.from({ length: count }, () => this.newStar(true));
     if (this.space.reduced) this.draw(0);
+  }
+
+  /** Si dibujar cuesta demasiado (equipo lento) se reduce la cantidad de estrellas */
+  private adaptar(ms: number) {
+    this.costo = this.costo * 0.9 + ms * 0.1;
+    if (++this.muestras % 30 === 0 && this.costo > 3.5 && this.stars.length > 24) {
+      this.stars.length = Math.floor(this.stars.length * 0.75);
+    }
   }
 
   private newStar(randomZ: boolean): Star {
@@ -135,8 +157,10 @@ export class SpaceBackground implements AfterViewInit, OnDestroy {
     // En crucero (movimiento muy lento) basta con ~24 fps; a pleno ritmo solo durante el salto
     const minStep = this.space.warp() ? 0 : 1 / 24;
     if (this.acc >= minStep) {
+      const t0 = performance.now();
       this.draw(this.acc);
       this.acc = 0;
+      this.adaptar(performance.now() - t0);
     }
     this.raf = requestAnimationFrame(this.loop);
   };
@@ -153,10 +177,10 @@ export class SpaceBackground implements AfterViewInit, OnDestroy {
     this.px += (this.tx - this.px) * Math.min(1, dt * 3);
     this.py += (this.ty - this.py) * Math.min(1, dt * 3);
 
-    // Color de acento del planeta actual (cambia con transición CSS)
-    this.tintAt -= dt;
-    if (this.tintAt <= 0) {
-      this.tintAt = 0.4;
+    // Color de acento del planeta actual: se relee solo cuando cambia de planeta
+    const planeta = document.body.dataset['planet'] ?? '';
+    if (planeta !== this.planetaActual) {
+      this.planetaActual = planeta;
       const c = getComputedStyle(document.body).getPropertyValue('--accent').trim();
       if (c) this.tint = c;
     }

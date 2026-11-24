@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { Motion } from '@capacitor/motion';
 import type { PluginListenerHandle } from '@capacitor/core';
 
@@ -15,6 +15,7 @@ export interface ShakeWatch {
 export class ShakeService {
   /** Cambio mínimo de aceleración entre dos lecturas (m/s²) para contar como sacudida */
   private readonly UMBRAL = 14;
+  private zone = inject(NgZone);
 
   async watch(
     onShake: (potencia: number) => void,
@@ -32,7 +33,9 @@ export class ShakeService {
     }, sondeoMs);
 
     try {
-      handle = await Motion.addListener('accel', (ev) => {
+      // El sensor emite ~60 lecturas/s: se escucha fuera de Angular para no disparar
+      // detección de cambios en cada una; solo se vuelve a la zona cuando hay sacudida
+      handle = await this.zone.runOutsideAngular(() => Motion.addListener('accel', (ev) => {
         const g = ev?.accelerationIncludingGravity;
         if (!g || g.x == null || g.y == null || g.z == null) return;
         hayDatos = true;
@@ -41,7 +44,7 @@ export class ShakeService {
           if (salto > this.UMBRAL) onShake(salto);
         }
         ultima = { x: g.x, y: g.y, z: g.z };
-      });
+      }));
     } catch {
       clearTimeout(timer);
       if (!detenido) onNoSensor();

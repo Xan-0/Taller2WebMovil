@@ -105,7 +105,7 @@ export class Kanban implements OnInit {
         if (nuevoEstado === 'completada') {
           this.marcar(tarea.id, 'complete', 1400);
           setTimeout(() => this.fx.burst(this.tarjeta(tarea.id), 'complete'), 60);
-          setTimeout(() => this.rocket.lanzar(tarea.titulo), 1000);
+          this.rocket.lanzarConAviso(tarea.titulo, 1000);
         }
       },
       error: () => {

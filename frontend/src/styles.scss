@@ -25,12 +25,6 @@ html {
   );
 }
 
-// Colores registrados: permiten TRANSICIONES suaves al cambiar de planeta
-@property --accent   { syntax: '<color>'; inherits: true; initial-value: #a78bfa; }
-@property --accent-2 { syntax: '<color>'; inherits: true; initial-value: #22d3ee; }
-@property --neb-1    { syntax: '<color>'; inherits: true; initial-value: #4c1d95; }
-@property --neb-2    { syntax: '<color>'; inherits: true; initial-value: #0e7490; }
-
 :root {
   // Zonas seguras (notch, barra de estado, barra de navegación de Android)
   --sat: max(env(safe-area-inset-top, 0px), var(--safe-area-inset-top, 0px));
@@ -53,11 +47,6 @@ body {
   --accent-2: #22d3ee;
   --neb-1: #4c1d95;
   --neb-2: #0e7490;
-  transition:
-    --accent 1.2s ease,
-    --accent-2 1.2s ease,
-    --neb-1 1.2s ease,
-    --neb-2 1.2s ease;
 }
 body[data-planet='nova']    { --accent: #a78bfa; --accent-2: #22d3ee; --neb-1: #4c1d95; --neb-2: #0e7490; }
 body[data-planet='terra']   { --accent: #22d3ee; --accent-2: #3b82f6; --neb-1: #0c4a6e; --neb-2: #1e3a8a; }
@@ -104,7 +93,7 @@ body {
 
   > :not(router-outlet) {
     display: block;
-    animation: page-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: page-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards;
   }
 
   > .page-leave {
@@ -114,19 +103,18 @@ body {
 }
 
 @keyframes page-in {
-  from { opacity: 0; transform: scale(0.82); filter: blur(10px) brightness(2.2); }
-  60%  { filter: blur(0) brightness(1.15); }
-  to   { opacity: 1; transform: none; filter: none; }
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: none; }
 }
 
 @keyframes page-out {
-  to { opacity: 0; transform: scale(1.22); filter: blur(12px) brightness(2.4); }
+  to { opacity: 0; transform: scale(1.18); }
 }
 
 // Los bloques de cada vista aparecen escalonados
 $page-containers: '.login-container, .dashboard-container, .eventos-container, .profile-container, .kanban-container, .calendar-container, .detail-container';
 #{$page-containers} {
-  > * { animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  > * { animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) backwards; }
   @for $i from 1 through 8 {
     > *:nth-child(#{$i}) { animation-delay: #{0.12 + $i * 0.08}s; }
   }
@@ -385,8 +373,8 @@ $page-containers: '.login-container, .dashboard-container, .eventos-container, .
   animation: dialog-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 @keyframes dialog-in {
-  from { opacity: 0; transform: scale(0.8) translateY(30px); filter: blur(6px); }
-  to   { opacity: 1; transform: none; filter: none; }
+  from { opacity: 0; transform: scale(0.85) translateY(24px); }
+  to   { opacity: 1; transform: none; }
 }
 .rocket-panel .mat-mdc-dialog-container {
   --mat-dialog-container-color: transparent;
@@ -526,7 +514,7 @@ $page-containers: '.login-container, .dashboard-container, .eventos-container, .
   10%  { transform: translateX(-8px) rotate(-1deg); background: rgba(244, 63, 94, 0.25); }
   20%  { transform: translateX(8px) rotate(1deg); }
   30%  { transform: translateX(-6px); box-shadow: 0 0 30px rgba(244, 63, 94, 0.7); }
-  100% { opacity: 0; transform: scale(0.04) rotate(-20deg); filter: blur(8px) hue-rotate(80deg) brightness(1.8); }
+  100% { opacity: 0; transform: scale(0.04) rotate(-20deg); }
 }
 
 // Nueva tarea: aterriza desde el espacio
@@ -535,9 +523,9 @@ $page-containers: '.login-container, .dashboard-container, .eventos-container, .
   animation: row-new 0.9s cubic-bezier(0.16, 1, 0.3, 1) both !important;
 }
 @keyframes row-new {
-  0%   { opacity: 0; transform: translateX(-60px) scale(0.9); filter: brightness(2.5) blur(4px); }
+  0%   { opacity: 0; transform: translateX(-60px) scale(0.9); }
   60%  { box-shadow: 0 0 34px color-mix(in srgb, var(--accent) 70%, transparent); }
-  100% { opacity: 1; transform: none; filter: none; box-shadow: none; }
+  100% { opacity: 1; transform: none; box-shadow: none; }
 }
 
 // Arrastrar tarjetas (Kanban)

@@ -38,9 +38,13 @@ export class RocketDialog implements OnInit, OnDestroy {
 
   async ngOnInit() {
     // La carga baja sola: hay que seguir agitando
-    this.decaimiento = setInterval(() => {
-      if (this.fase() === 'esperando' && this.carga() > 0) this.carga.update((c) => Math.max(0, c - 2.5));
-    }, 100);
+    this.zone.runOutsideAngular(() => {
+      this.decaimiento = setInterval(() => {
+        if (this.fase() === 'esperando' && this.carga() > 0) {
+          this.zone.run(() => this.carga.update((c) => Math.max(0, c - 2.5)));
+        }
+      }, 100);
+    });
 
     // Si pasan unos segundos sin agitar, se ofrece el botón alternativo
     this.ayuda = setTimeout(() => this.mostrarBoton.set(true), 7000);

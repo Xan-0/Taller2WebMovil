@@ -1,5 +1,5 @@
 <mat-toolbar color="primary" class="navbar">
-  <span>Gestor de Tareas y Eventos</span>
+  <span>Gestor de Tareas</span>
   <span class="spacer"></span>
   <button mat-button color="accent" routerLink="/calendar">Calendario</button>
   <button mat-button color="accent" routerLink="/kanban">Acceso a Kanban</button>
@@ -64,7 +64,9 @@
             <mat-select formControlName="estado">
               <mat-option value="por hacer">Por Hacer</mat-option>
               <mat-option value="en progreso">En Progreso</mat-option>
-              <mat-option value="completada">Completada</mat-option>
+              @if (editingTaskId() !== null) {
+                <mat-option value="completada">Completada</mat-option>
+              }
             </mat-select>
           </mat-form-field>
 

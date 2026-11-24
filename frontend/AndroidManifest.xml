@@ -1,4 +1,4 @@
--- colocar dentro del archivo generado android\app\src\main\AndroidManifest.xml
+-- colocar dentro del archivo generado frontend\android\app\src\main\AndroidManifest.xml
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.CAMERA" />
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
