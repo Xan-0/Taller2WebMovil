@@ -6,7 +6,7 @@ Información sobre inicialización de la base de datos en *database/database.py*
 
 (Después de crear las variables de entorno requeridas en un archivo 'backend/.env', de acuerdo con backend/config.py)
 
-En anaconda prompt o similar, desde la carpeta backend/ ejecutar:
+En anaconda prompt o similar, desde la carpeta raíz ejecutar:
 ```shell
 (base) conda env create -f environment.yml
 (base) conda activate taller2WM-backend

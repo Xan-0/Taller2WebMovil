@@ -63,6 +63,46 @@
           }
         </div>
       }
+
+      <h3 class="section-title">Preferencias de la Aplicación</h3>
+      <div class="preferencias-box">
+        <div class="pref-item">
+          <div>
+            <strong>Agitar para escanear</strong>
+            <span>Abre el escáner QR al agitar el dispositivo.</span>
+          </div>
+          <mat-slide-toggle
+            [checked]="preferencias.config().agitar_para_escanear"
+            (change)="preferencias.actualizarPreferencia('agitar_para_escanear', $event.checked)"
+          ></mat-slide-toggle>
+        </div>
+
+        <div class="pref-item">
+          <div>
+            <strong>Música de fondo</strong>
+            <span>Reproduce audio ambiental espacial durante la sesión.</span>
+          </div>
+          <mat-slide-toggle
+            [checked]="preferencias.config().musica_fondo"
+            (change)="preferencias.actualizarPreferencia('musica_fondo', $event.checked)"
+          ></mat-slide-toggle>
+        </div>
+
+        <div class="pref-item slider-item">
+          <div class="slider-header">
+            <strong>Volumen de música</strong>
+            <span>{{ preferencias.config().volumen_musica }}%</span>
+          </div>
+          <mat-slider [min]="0" [max]="100" [step]="5" [disabled]="!preferencias.config().musica_fondo">
+            <input
+              matSliderThumb
+              [value]="preferencias.config().volumen_musica"
+              (valueChange)="preferencias.actualizarPreferencia('volumen_musica', $event)"
+            />
+          </mat-slider>
+        </div>
+      </div>
+
     </mat-card-content>
   </mat-card>
 </div>

@@ -6,7 +6,9 @@ CREATE TABLE usuarios (
     password_hash text NOT NULL,
     configuracion JSONB NOT NULL DEFAULT
     ('
-    {"agitar_para_escanear": true}
+    {"agitar_para_escanear": true,
+    "musica_fondo": false,
+    "volumen_musica": 40}
     ')::jsonb
 );
 

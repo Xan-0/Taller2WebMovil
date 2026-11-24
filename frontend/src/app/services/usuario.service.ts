@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment.prod';
+import { ConfiguracionUsuario } from '../models/app.models';
 
 @Injectable({
   providedIn: 'root'
@@ -14,9 +15,11 @@ export class UsuarioService {
     return this.http.get(`${this.apiUrl}/auth/perfil`);
   }
 
-  actualizarPerfil(data: { nombre?: string; password?: string }): Observable<any> {
+  actualizarPerfil(data: {
+    nombre?: string;
+    password?: string;
+    configuracion?: ConfiguracionUsuario;
+  }): Observable<any> {
     return this.http.put(`${this.apiUrl}/auth/perfil`, data);
   }
 }
-
-

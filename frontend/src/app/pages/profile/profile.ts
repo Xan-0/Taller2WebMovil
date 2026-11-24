@@ -12,6 +12,9 @@ import { UsuarioService } from '../../services/usuario.service';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { BiometricService, EstadoHuella } from '../../services/biometric.service';
+import { PreferenciasService } from '../../services/preferencias.service';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSliderModule } from '@angular/material/slider';
 
 @Component({
   selector: 'app-profile',
@@ -26,7 +29,9 @@ import { BiometricService, EstadoHuella } from '../../services/biometric.service
     MatInputModule,
     RouterLink,
     MatToolbar,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatSliderModule,
+    MatSlideToggleModule
 ],
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss']
@@ -35,6 +40,7 @@ export class Profile implements OnInit {
   private fb = inject(FormBuilder);
   private tareasService = inject(TareasService);
   private usuarioService = inject(UsuarioService);
+  private preferencias = inject(PreferenciasService);
   private bio = inject(BiometricService);
   private snackBar = inject(MatSnackBar);
 
@@ -69,6 +75,7 @@ export class Profile implements OnInit {
         this.perfilForm.patchValue({
           nombre: res.nombre || res.email || ''
         });
+        this.preferencias.hidratarDesdeBackend(res.configuracion);
       },
       error: (err) => console.error('Error al cargar perfil', err)
     });

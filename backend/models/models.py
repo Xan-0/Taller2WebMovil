@@ -9,7 +9,15 @@ class Usuario(Base):
     nombre = Column(String, nullable=False, unique=True)
     email = Column(String,  nullable=False, unique=True)
     password_hash = Column(String, nullable=False)
-    configuracion = Column(JSON, nullable=False, default={"agitar_para_escanear": True})
+    configuracion = Column(
+        JSON,
+        nullable=False,
+        default={
+            "agitar_para_escanear": True,
+            "musica_fondo": False,
+            "volumen_musica": 40
+            }
+        )
 
     # Relaciones
     tareas = relationship("Tarea", back_populates="usuario", cascade="all, delete-orphan")

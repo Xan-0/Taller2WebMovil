@@ -6,6 +6,12 @@ export interface Usuario {
   tareas?: Tarea[];
 }
 
+export interface ConfiguracionUsuario {
+  agitar_para_escanear: boolean;
+  musica_fondo: boolean;
+  volumen_musica: number;
+}
+
 export interface Tarea {
   id?: number; 
   uid: number; 
@@ -27,5 +33,3 @@ export interface UserLogin {
   nombre: string;
   password_hash: string;
 }
-
-
