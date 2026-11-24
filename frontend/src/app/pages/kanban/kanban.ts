@@ -43,6 +43,9 @@ export class Kanban implements OnInit {
   private fx = inject(FxService);
   private rocket = inject(RocketService);
 
+  private holeRect?: DOMRect;
+  private holeRectTimer?: ReturnType<typeof setTimeout>;
+
   @ViewChild('hole') hole?: ElementRef<HTMLElement>;
 
   readonly columnas: { estado: Estado; titulo: string; icono: string }[] = [
@@ -74,20 +77,39 @@ export class Kanban implements OnInit {
 
   // ---------- Arrastrar y soltar ----------
   onDragStart(_: CdkDragStart) {
+    this.holeRect = undefined;
+    clearTimeout(this.holeRectTimer);
     this.arrastrando.set(true);
+
+    // Captura la posición final una vez terminada la transición de entrada (0.5s)
+    this.holeRectTimer = setTimeout(() => {
+      this.holeRect = this.hole?.nativeElement.getBoundingClientRect();
+    }, 520);
   }
 
   onDragMoved(e: CdkDragMove) {
-    const r = this.hole?.nativeElement.getBoundingClientRect();
+    const r = this.holeRect ?? this.hole?.nativeElement.getBoundingClientRect();
     if (!r) return;
+
     const { x, y } = e.pointerPosition;
-    this.sobreAgujero.set(x >= r.left && x <= r.right && y >= r.top && y <= r.bottom);
+    const pad = 10;
+    const estaSobre =
+      x >= r.left - pad &&
+      x <= r.right + pad &&
+      y >= r.top - pad &&
+      y <= r.bottom + pad;
+
+    if (this.sobreAgujero() !== estaSobre) {
+      this.sobreAgujero.set(estaSobre);
+    }
   }
 
   onDragEnded(e: CdkDragEnd<Tarea>) {
+    clearTimeout(this.holeRectTimer);
     const soltadoEnAgujero = this.sobreAgujero();
     this.arrastrando.set(false);
     this.sobreAgujero.set(false);
+    this.holeRect = undefined;
     if (soltadoEnAgujero) this.pedirEliminar(e.source.data, e.source.element.nativeElement);
   }
 
