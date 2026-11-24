@@ -541,7 +541,7 @@ $page-containers: '.login-container, .dashboard-container, .eventos-container, .
   border: 1px dashed var(--accent);
   background: color-mix(in srgb, var(--accent) 10%, transparent) !important;
 }
-.cdk-drag-animating { transition: transform 280ms cubic-bezier(0, 0, 0.2, 1); }
+.cdk-drag-animating { transition: transform 160ms cubic-bezier(0, 0, 0.2, 1); }
 
 // ---------------------------------------------------------------------
 //  Responsive

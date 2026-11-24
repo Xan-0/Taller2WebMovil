@@ -76,6 +76,7 @@
 
       .task-card {
         cursor: grab;
+        touch-action: none;
         background: rgba(255, 255, 255, 0.06);
         backdrop-filter: none;
         -webkit-backdrop-filter: none;
