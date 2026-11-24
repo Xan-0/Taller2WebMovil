@@ -1,5 +1,15 @@
 .vscode/
 *.pdf
 *.pyc
-*.env
 node_modules/
+dist/
+.angular/
+.env
+__pycache__/
+
+# Plataforma Android: se puede versionar o regenerar con `npm run android:preparar`
+frontend/android/build/
+frontend/android/app/build/
+frontend/android/.gradle/
+frontend/android/local.properties
+frontend/android/.idea/

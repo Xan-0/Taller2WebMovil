@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { Capacitor } from '@capacitor/core';
+import { LocationService, ResultadoUbicacion } from '../../services/location.service';
 import QRCode from 'qrcode';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -57,6 +58,7 @@ export class Eventos {
 
   /** true solo dentro de la APK (Capacitor); en el navegador no se muestra el botón de QR */
   readonly esNativa = Capacitor.isNativePlatform();
+  private ubicacion = inject(LocationService);
   readonly miUid = this.authService.getUid();
 
   private refresh = signal(0);
@@ -93,30 +95,23 @@ export class Eventos {
   });
 
   // ---------- Ubicación ----------
-  private obtenerUbicacion(): Promise<{ lat: number; lng: number } | null> {
-    return new Promise((resolve) => {
-      if (!('geolocation' in navigator)) return resolve(null);
-      navigator.geolocation.getCurrentPosition(
-        (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        () => resolve(null),
-        { enableHighAccuracy: true, timeout: 8000 },
-      );
-    });
+  /** Avisa el motivo del fallo de ubicación y, si aplica, ofrece abrir los Ajustes de la app */
+  private avisarUbicacion(r: Extract<ResultadoUbicacion, { ok: false }>) {
+    const ref = this.snackBar.open(r.mensaje, r.puedeAbrirAjustes ? 'Ajustes' : 'Cerrar', { duration: 8000 });
+    if (r.puedeAbrirAjustes) ref.onAction().subscribe(async () => (await import('@capacitor-mlkit/barcode-scanning')).BarcodeScanner.openSettings());
   }
 
   async usarMiUbicacion() {
     this.obteniendoUbicacion.set(true);
-    const pos = await this.obtenerUbicacion();
+    const r = await this.ubicacion.obtener();
     this.obteniendoUbicacion.set(false);
-    if (!pos) {
-      this.snackBar.open('No se pudo obtener tu ubicación. Revisa los permisos o ingrésala a mano.', 'Cerrar', {
-        duration: 4000,
-      });
+    if (!r.ok) {
+      this.avisarUbicacion(r);
       return;
     }
     this.eventoForm.patchValue({
-      latitud: Number(pos.lat.toFixed(6)),
-      longitud: Number(pos.lng.toFixed(6)),
+      latitud: Number(r.lat.toFixed(6)),
+      longitud: Number(r.lng.toFixed(6)),
     });
   }
 
@@ -196,12 +191,19 @@ export class Eventos {
   async confirmar(idEvento: number) {
     if (this.confirmando()) return;
     this.confirmando.set(true);
-    const pos = await this.obtenerUbicacion(); // opcional: si hay GPS el backend valida cercanía
+    // Ubicación: en la APK es obligatoria (el backend valida que estés cerca del evento);
+    // en la web es opcional porque el navegador puede no tener GPS
+    const r = await this.ubicacion.obtener();
+    if (!r.ok && this.esNativa) {
+      this.confirmando.set(false);
+      this.avisarUbicacion(r);
+      return;
+    }
     this.eventosService
       .confirmarAsistencia({
         id_evento: idEvento,
-        latitud_actual: pos?.lat ?? null,
-        longitud_actual: pos?.lng ?? null,
+        latitud_actual: r.ok ? r.lat : null,
+        longitud_actual: r.ok ? r.lng : null,
       })
       .subscribe({
         next: () => {
