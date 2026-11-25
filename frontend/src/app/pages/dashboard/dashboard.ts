@@ -27,8 +27,9 @@ import { AuthService } from '../../services/auth.service';
 import { FxService } from '../../services/fx.service';
 import { RocketService } from '../../services/rocket.service';
 import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
+import { EventosService } from '../../services/eventos.service';
 
-export type Orden = 'llegada' | 'fecha' | 'estado' | 'prioridad' | 'categoria';
+export type Orden = 'llegada' | 'fecha' | 'estado' | 'prioridad' | 'categoria' | 'id_evento';
 
 /** Valida que hora de inicio + duración no pase de las 24:00 (el backend exige < 1440). */
 const limiteDia: ValidatorFn = (group) => {
@@ -70,10 +71,12 @@ export class Dashboard {
   private dialog = inject(MatDialog);
   private fx = inject(FxService);
   private rocket = inject(RocketService);
+  private eventosService = inject(EventosService);
 
   displayedColumns: string[] = [
     'titulo',
     'descripcion',
+    'id_evento',
     'fecha',
     'horario',
     'estado',
@@ -88,6 +91,7 @@ export class Dashboard {
     { value: 'estado', label: 'Estado' },
     { value: 'prioridad', label: 'Prioridad' },
     { value: 'categoria', label: 'Categoría' },
+    { value: 'id_evento', label: 'Evento' }
   ];
 
   // ---------- Estado (signals) ----------
@@ -105,6 +109,10 @@ export class Dashboard {
     params: () => this.refreshTrigger(),
     loader: () => firstValueFrom(this.tareasService.getTareas()),
   });
+
+  eventosResource = resource({
+  loader: () => firstValueFrom(this.eventosService.getEventos()),
+});
 
   tareasOrdenadas = computed<Tarea[]>(() => {
     const tareas = [...(this.tareasResource.value() ?? [])];
@@ -134,6 +142,10 @@ export class Dashboard {
         return tareas.sort(
           (a, b) => (a.categoria ?? '').localeCompare(b.categoria ?? '') || porId(a, b),
         );
+      case 'id_evento':
+      return tareas.sort(
+        (a, b) => (a.id_evento ?? Number.MAX_SAFE_INTEGER) - (b.id_evento ?? Number.MAX_SAFE_INTEGER) || porId(a, b),
+      );
       default:
         return tareas.sort(porId); // orden de llegada
     }
@@ -149,6 +161,7 @@ export class Dashboard {
       estado: ['por hacer', [Validators.required]],
       prioridad: ['media'],
       categoria: ['general'],
+      id_evento: [null],
     },
     { validators: limiteDia },
   );
@@ -190,6 +203,7 @@ export class Dashboard {
       estado: this.editingTaskId() === null && v.estado === 'completada' ? 'por hacer' : v.estado,
       prioridad: v.prioridad,
       categoria: v.categoria,
+      id_evento: v.id_evento !== null && v.id_evento !== '' ? Number(v.id_evento) : undefined,
     };
     const currentId = this.editingTaskId();
 
@@ -271,6 +285,7 @@ export class Dashboard {
       estado: tarea.estado,
       prioridad: tarea.prioridad,
       categoria: tarea.categoria ?? 'general',
+      id_evento: tarea.id_evento ?? null,
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -330,6 +345,7 @@ export class Dashboard {
       estado: 'por hacer',
       prioridad: 'media',
       categoria: 'general',
+      id_evento: null,
     });
   }
 

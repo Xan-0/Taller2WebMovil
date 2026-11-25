@@ -30,6 +30,7 @@ class UsuarioUpdate(BaseModel):
 
 # --- Esquemas de Tarea (CRUD) ---
 class TareaCreate(BaseModel):
+    id_evento: Optional[int]
     titulo: str
     descripcion: Optional[str] = None
     fecha: str
@@ -40,6 +41,7 @@ class TareaCreate(BaseModel):
     categoria: Optional[str] = "general"
 
 class TareaUpdate(BaseModel):
+    id_evento: Optional[int] = None
     titulo: Optional[str] = None
     descripcion: Optional[str] = None
     fecha: Optional[str] = None
@@ -52,6 +54,7 @@ class TareaUpdate(BaseModel):
 class TareaResponse(BaseModel):
     id: int
     uid: int
+    id_evento: Optional[int] = None
     titulo: str
     descripcion: Optional[str] = None
     fecha: str

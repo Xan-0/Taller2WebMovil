@@ -30,6 +30,7 @@ class Tarea(Base):
 
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)  # Recomendado para el CRUD
     uid = Column(Integer, ForeignKey("usuarios.uid"), nullable=False)
+    id_evento = Column(Integer, ForeignKey("eventos.id", ondelete="SET NULL"), nullable=True)
     titulo = Column(Text, nullable=False)
     descripcion = Column(Text, nullable=True)
     fecha = Column(Text, nullable=False, server_default="now()::date::text")
@@ -50,6 +51,7 @@ class Tarea(Base):
 
     # Relación inversa con usuario
     usuario = relationship("Usuario", back_populates="tareas")
+    evento = relationship("Evento", back_populates="tareas")
 
 class Evento(Base):
     __tablename__ = "eventos"
@@ -72,6 +74,7 @@ class Evento(Base):
 
     host = relationship("Usuario", back_populates="eventos_host")
     asistencias = relationship("Asistencia", back_populates="evento", cascade="all, delete-orphan")
+    tareas = relationship("Tarea", back_populates="evento")
 
 class Asistencia(Base):
     __tablename__ = "asistencias"

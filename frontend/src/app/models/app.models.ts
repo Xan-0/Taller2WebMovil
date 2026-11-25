@@ -1,35 +1,21 @@
-
-export interface Usuario {
-  uid: number;
-  nombre: string;
-  password_hash?: string; 
-  tareas?: Tarea[];
-}
-
 export interface ConfiguracionUsuario {
   agitar_para_escanear: boolean;
   musica_fondo: boolean;
   volumen_musica: number;
 }
 
-export interface Tarea {
-  id?: number; 
-  uid: number; 
+export type TipoElementoCalendario = 'tarea' | 'evento';
+
+export interface ElementoCalendario {
+  id: string; // ej. 'tarea-12' o 'evento-4' para evitar colisiones de ID numérico
+  origenId: number;
+  tipo: TipoElementoCalendario;
   titulo: string;
-  descripcion?: string | null;
-  fecha: string;
-  inicio_minutos: number;
-  duracion_minutos: number;
-  estado: 'por hacer' | 'en progreso' | 'completada';
-  prioridad?: 'baja' | 'media' | 'alta' | null;
-}
-
-export interface AuthResponse {
-  access_token: string;
-  token_type: string;
-}
-
-export interface UserLogin {
-  nombre: string;
-  password_hash: string;
+  descripcion?: string;
+  fecha: string; // YYYY-MM-DD (para eventos de varios días, puedes expandir o marcar rango)
+  horaTexto?: string; // ej. '14:30' a partir de inicio_minutos en tareas, o 'Todo el día' / horario del evento
+  estado?: string; // en tareas: 'por hacer' | 'en progreso' | 'completada'
+  prioridad?: string;
+  ubicacionUrl?: string;
+  eventoId?: number | null;
 }

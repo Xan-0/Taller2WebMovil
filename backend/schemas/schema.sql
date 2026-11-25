@@ -17,6 +17,7 @@ CREATE TABLE usuarios (
 CREATE TABLE tareas (
     id SERIAL PRIMARY KEY,
     uid INTEGER NOT NULL REFERENCES usuarios(uid) ON DELETE CASCADE,
+    id_evento INTEGER REFERENCES eventos(id),
     titulo text NOT NULL,
     descripcion text,
     fecha text NOT NULL DEFAULT now()::date::text,
