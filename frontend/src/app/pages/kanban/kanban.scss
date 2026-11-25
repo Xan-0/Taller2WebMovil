@@ -103,6 +103,14 @@
           &.prio-media { background: rgba(250, 204, 21, 0.16); color: #fde047; }
           &.prio-baja  { background: rgba(52, 211, 153, 0.16); color: #6ee7b7; }
         }
+
+        .evento-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.75rem;
+          opacity: 0.9;
+        }
       }
     }
   }

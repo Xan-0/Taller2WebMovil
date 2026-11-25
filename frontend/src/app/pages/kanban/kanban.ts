@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ViewEncapsulation, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CdkDrag, CdkDragEnd, CdkDragMove, CdkDragStart, CdkDropList, CdkDropListGroup, CdkDragDrop } from '@angular/cdk/drag-drop';
 import { MatCardModule } from '@angular/material/card';
@@ -12,6 +12,7 @@ import { TareasService, Tarea } from '../../services/tareas.service';
 import { FxService } from '../../services/fx.service';
 import { RocketService } from '../../services/rocket.service';
 import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
+import { EventosService, Evento } from '../../services/eventos.service';
 
 type Estado = 'por hacer' | 'en progreso' | 'completada';
 
@@ -38,6 +39,7 @@ type Estado = 'por hacer' | 'en progreso' | 'completada';
 })
 export class Kanban implements OnInit {
   private tareasService = inject(TareasService);
+  private eventosService = inject(EventosService);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
   private fx = inject(FxService);
@@ -55,13 +57,23 @@ export class Kanban implements OnInit {
   ];
 
   tareas = signal<Tarea[]>([]);
+  eventos = signal<Evento[]>([]);
   /** Efecto visual por tarea (id -> tipo) */
   fxState = signal<Record<number, 'complete' | 'delete' | 'new'>>({});
   arrastrando = signal(false);
   sobreAgujero = signal(false);
 
+  eventosPorId = computed(() => {
+    const mapa = new Map<number, string>();
+    for (const ev of this.eventos()) {
+      mapa.set(ev.id, ev.nombre);
+    }
+    return mapa;
+  });
+
   ngOnInit() {
     this.cargarTareas();
+    this.cargarEventos();
   }
 
   cargarTareas() {
@@ -69,6 +81,18 @@ export class Kanban implements OnInit {
       next: (data) => this.tareas.set(data),
       error: () => this.snackBar.open('Error al cargar las tareas', 'Cerrar', { duration: 3000 }),
     });
+  }
+
+  cargarEventos() {
+    this.eventosService.getEventos().subscribe({
+      next: (data) => this.eventos.set(data),
+      error: (err) => console.error('Error al cargar eventos en Kanban', err),
+    });
+  }
+
+  nombreEvento(idEvento?: number | null): string | null {
+    if (!idEvento) return null;
+    return this.eventosPorId().get(idEvento) ?? `Evento #${idEvento}`;
   }
 
   obtenerPorEstado(estado: string) {

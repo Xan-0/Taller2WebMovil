@@ -43,6 +43,12 @@
               @if (task.prioridad) {
                 <span class="prio prio-{{ task.prioridad.toLowerCase() }}">{{ task.prioridad }}</span>
               }
+              @if (nombreEvento(task.id_evento); as nombreEv) {
+                <span class="badge evento-badge">
+                  <mat-icon inline>event</mat-icon>
+                  {{ nombreEv }}
+                </span>
+              }
             </mat-card-content>
           </mat-card>
         } @empty {

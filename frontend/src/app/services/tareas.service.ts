@@ -6,7 +6,7 @@ import { environment } from '../../environments/environment.prod';
 export interface Tarea {
     id: number;
     uid: number;
-    id_evento?: number | null;
+    id_evento?: number | null | undefined;
     titulo: string;
     descripcion: string;
     fecha: string;
